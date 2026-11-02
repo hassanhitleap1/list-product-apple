@@ -6,8 +6,8 @@ use yii\widgets\DetailView;
 /** @var yii\web\View $this */
 /** @var app\models\IphoneModels $model */
 
-$this->title = $model->id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Iphone Models'), 'url' => ['index']];
+$this->title = $model->model;
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Phone trade-in prices'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
@@ -30,8 +30,13 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'id',
-            'model',
+            'brand',
+            'name',
+            'storage',
             'price',
+            'price_max',
+            'is_active:boolean',
+            'sort_order',
         ],
     ]) ?>
 

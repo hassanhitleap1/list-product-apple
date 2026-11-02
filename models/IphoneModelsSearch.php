@@ -17,9 +17,9 @@ class IphoneModelsSearch extends IphoneModels
     public function rules()
     {
         return [
-            [['id'], 'integer'],
-            [['model'], 'safe'],
-            [['price'], 'number'],
+            [['id', 'is_active'], 'integer'],
+            [['model', 'brand', 'name', 'storage'], 'safe'],
+            [['price', 'price_max'], 'number'],
         ];
     }
 
@@ -47,6 +47,8 @@ class IphoneModelsSearch extends IphoneModels
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['brand' => SORT_ASC, 'sort_order' => SORT_ASC, 'id' => SORT_ASC]],
+            'pagination' => ['pageSize' => 50],
         ]);
 
         $this->load($params);
@@ -61,9 +63,14 @@ class IphoneModelsSearch extends IphoneModels
         $query->andFilterWhere([
             'id' => $this->id,
             'price' => $this->price,
+            'price_max' => $this->price_max,
+            'brand' => $this->brand,
+            'storage' => $this->storage,
+            'is_active' => $this->is_active,
         ]);
 
-        $query->andFilterWhere(['like', 'model', $this->model]);
+        $query->andFilterWhere(['like', 'model', $this->model])
+            ->andFilterWhere(['like', 'name', $this->name]);
 
         return $dataProvider;
     }

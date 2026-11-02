@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use Yii;
 use app\models\IphoneModels;
 use app\models\IphoneModelsSearch;
 use yii\web\Controller;

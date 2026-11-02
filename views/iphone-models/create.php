@@ -5,8 +5,8 @@ use yii\helpers\Html;
 /** @var yii\web\View $this */
 /** @var app\models\IphoneModels $model */
 
-$this->title = Yii::t('app', 'Create Iphone Models');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Iphone Models'), 'url' => ['index']];
+$this->title = Yii::t('app', 'Add phone');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Phone trade-in prices'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="iphone-models-create">
