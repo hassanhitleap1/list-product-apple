@@ -44,6 +44,11 @@ $config = [
         ],
         'db' => $db,
         
+        'assetManager' => [
+            // Adds ?v=<file time> to CSS/JS links so browsers load the new
+            // version right after a deploy instead of a cached old one.
+            'appendTimestamp' => true,
+        ],
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
