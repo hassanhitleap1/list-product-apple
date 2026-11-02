@@ -79,7 +79,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
         <?php endif ?>
         <?= Alert::widget() ?>
 
-        <?=Html::img('@web/image/logo.jpg', ['class' => 'mx-auto d-block logo-mobile mt-3', 'style' => ' background-color: while !important', 'alt' => 'Icon' ,'height' => '50']); ?>
+        <?=Html::img('@web/image/logo.jpg', ['class' => 'mx-auto logo-mobile mt-3', 'style' => ' background-color: while !important', 'alt' => 'Icon' ,'height' => '50']); ?>
 
         <?= $content ?>
     </div>
@@ -88,7 +88,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
 <footer id="footer" class="mt-auto py-3 bg-light">
     <div class="container">
         <div class="row text-muted">
-            <div class="col-md-6 text-center text-md-start">&copy; My Company <?= date('Y') ?></div>
+            <div class="col-md-6 text-center text-md-start">&copy; Action Mobile <?= date('Y') ?></div>
             <div class="col-md-6 text-center text-md-end"><?= Yii::powered() ?></div>
         </div>
     </div>

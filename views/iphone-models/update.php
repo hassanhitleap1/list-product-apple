@@ -5,11 +5,11 @@ use yii\helpers\Html;
 /** @var yii\web\View $this */
 /** @var app\models\IphoneModels $model */
 
-$this->title = Yii::t('app', 'Update Iphone Models: {name}', [
-    'name' => $model->id,
+$this->title = Yii::t('app', 'Edit: {name}', [
+    'name' => $model->model,
 ]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Iphone Models'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Phone trade-in prices'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => $model->model, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 ?>
 <div class="iphone-models-update">

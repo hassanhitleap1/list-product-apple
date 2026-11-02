@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use Yii;
 use app\models\BattaryModels;
 use app\models\BattaryModelsSearch;
 use yii\web\Controller;

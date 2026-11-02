@@ -1,0 +1,356 @@
+/* Trade-in price calculator — Action Mobile
+   Brand: logo black, Action blue (#2FA3DD), and the rounded capsule from the "O". */
+
+.ti {
+    --ink: #000;
+    --paper: #fff;
+    --mist: #f1f4f6;
+    --line: #d5dde3;
+    --muted: #4f5d68;
+    --blue: #2fa3dd;
+    --blue-ink: #0a6896;
+    --minus: #b3261e;
+    --on-ink-muted: #a7b3bc;
+
+    font-family: 'Readex Pro', system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
+    color: var(--ink);
+    font-size: 1rem;
+    line-height: 1.5;
+    padding-bottom: 2rem;
+}
+
+.ti [lang="ar"] { font-family: 'Readex Pro', Tahoma, sans-serif; }
+
+/* ---------- Intro ---------- */
+
+.ti-intro { max-width: 40rem; margin: 1.5rem 0 2rem; }
+
+.ti-intro h1 {
+    font-size: clamp(2rem, 5vw, 2.875rem);
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+.ti-intro-ar {
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: var(--blue-ink);
+    margin: .5rem 0 0;
+    text-align: left;
+}
+
+.ti-lede { color: var(--muted); font-size: 1.0625rem; margin: .875rem 0 0; max-width: 34rem; }
+
+/* ---------- Layout ---------- */
+
+.ti-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+    align-items: start;
+}
+
+@media (min-width: 992px) {
+    .ti-grid { grid-template-columns: minmax(0, 1fr) 22.5rem; gap: 3.5rem; }
+    .ti-result { position: sticky; top: 5.5rem; }
+}
+
+/* ---------- Steps ---------- */
+
+.ti-step { padding: 1.75rem 0; border-top: 1px solid var(--line); }
+.ti-step:first-child { border-top: 0; padding-top: 0; }
+
+.ti-step h2 {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .25rem .75rem;
+    font-size: 1.3125rem;
+    font-weight: 600;
+    margin: 0 0 1.125rem;
+}
+
+/* Step number in a small capsule, like the logo's "O". */
+.ti-num {
+    display: inline-grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 1.625rem;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--blue);
+    font-size: .9375rem;
+    font-weight: 600;
+}
+
+.ti-ar { font-size: .9375rem; font-weight: 400; color: var(--muted); }
+
+.ti-field { border: 0; padding: 0; margin: 0 0 1.25rem; min-width: 0; }
+.ti-field:last-child { margin-bottom: 0; }
+
+.ti-label {
+    display: flex;
+    gap: .625rem;
+    align-items: baseline;
+    font-size: .9375rem;
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: .625rem;
+    float: none;
+    width: auto;
+    padding: 0;
+}
+
+.ti-help { color: var(--muted); font-size: .9375rem; margin: -.5rem 0 1rem; max-width: 38rem; }
+
+.ti-empty { color: var(--muted); margin: .25rem 0 0; }
+
+/* ---------- Pills (radio options) ---------- */
+
+.ti-pills { display: flex; flex-wrap: wrap; gap: .5rem; }
+.ti-pills--stack { flex-direction: column; align-items: stretch; max-width: 30rem; }
+
+.ti-pill { position: relative; margin: 0; cursor: pointer; }
+
+.ti-pill input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+}
+
+.ti-pill > span {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .125rem .625rem;
+    min-height: 2.75rem;
+    padding: .5rem 1.125rem;
+    border: 1.5px solid var(--line);
+    border-radius: 999px;
+    background: var(--paper);
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+    transition: background-color .12s, border-color .12s;
+}
+
+.ti-pills--stack .ti-pill > span { border-radius: 1.375rem; padding: .75rem 1.25rem; }
+
+.ti-pill small { color: var(--muted); font-size: .875rem; }
+.ti-pill-deduct { font-style: normal; font-size: .875rem; color: var(--minus); }
+
+.ti-pill:hover > span { border-color: var(--ink); }
+
+.ti-pill input:checked + span {
+    background: var(--blue);
+    border-color: var(--blue);
+    font-weight: 500;
+}
+.ti-pill input:checked + span small,
+.ti-pill input:checked + span .ti-pill-deduct { color: var(--ink); }
+
+.ti-pill input:focus-visible + span { outline: 3px solid var(--ink); outline-offset: 2px; }
+
+.ti-pills--brand .ti-pill > span { font-size: 1.0625rem; padding-inline: 1.5rem; }
+
+/* ---------- Search ---------- */
+
+.ti-search { position: relative; max-width: 24rem; margin: 0 0 1.25rem; }
+.ti-search svg { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--muted); }
+
+.ti-search input {
+    width: 100%;
+    min-height: 2.875rem;
+    padding: .5rem 1rem .5rem 2.75rem;
+    border: 1.5px solid var(--line);
+    border-radius: 999px;
+    background: var(--mist);
+    font: inherit;
+    color: inherit;
+}
+.ti-search input:focus { outline: 3px solid var(--blue); outline-offset: 1px; border-color: var(--ink); background: var(--paper); }
+
+/* ---------- Damage checkboxes ---------- */
+
+.ti-checks { display: grid; gap: .5rem; max-width: 30rem; }
+
+.ti-check {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.375rem 1fr auto;
+    align-items: center;
+    gap: .875rem;
+    min-height: 3.25rem;
+    padding: .625rem 1.125rem;
+    border: 1.5px solid var(--line);
+    border-radius: 1rem;
+    cursor: pointer;
+    margin: 0;
+}
+.ti-check:hover { border-color: var(--ink); }
+
+.ti-check input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+
+.ti-check-box {
+    width: 1.375rem;
+    height: 1.375rem;
+    border: 2px solid var(--muted);
+    border-radius: .4rem;
+    background: var(--paper);
+}
+.ti-check input:checked ~ .ti-check-box {
+    background: var(--ink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%232fa3dd' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 85% no-repeat;
+    border-color: var(--ink);
+}
+.ti-check input:focus-visible ~ .ti-check-box { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+.ti-check-text { display: flex; flex-direction: column; line-height: 1.3; }
+.ti-check-text small { color: var(--muted); font-size: .875rem; }
+.ti-deduct { color: var(--minus); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+/* ---------- Result: black panel with a blue capsule, like the logo ---------- */
+
+.ti-tag {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 1.75rem;
+    padding: 1.5rem 1.5rem 1.25rem;
+}
+
+.ti-tag-title {
+    display: flex;
+    justify-content: space-between;
+    gap: .5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 0;
+}
+.ti-tag-title .ti-ar { color: var(--on-ink-muted); }
+
+.ti-tag-phone { color: var(--on-ink-muted); margin: .25rem 0 1.125rem; min-height: 1.5em; }
+
+.ti-capsule {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: .5rem;
+    padding: .875rem 1.25rem;
+    border-radius: 999px;
+    border: 2px solid var(--blue);
+    color: var(--blue);
+    transition: background-color .2s, color .2s;
+}
+.ti-capsule.is-final { background: var(--blue); color: var(--ink); }
+
+.ti-amount {
+    font-size: clamp(1.75rem, 6vw, 2.25rem);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+.ti-currency { font-size: 1rem; font-weight: 500; }
+
+.ti-status { color: var(--on-ink-muted); font-size: .9375rem; text-align: center; margin: .75rem 0 0; }
+
+.ti-breakdown { margin: 1.25rem 0 0; padding-top: 1rem; border-top: 1px solid #2c3439; font-size: .9375rem; }
+.ti-breakdown div:not(#tiDeductRows) { display: flex; justify-content: space-between; gap: 1rem; padding: .25rem 0; }
+.ti-breakdown dt { font-weight: 400; color: var(--on-ink-muted); }
+.ti-breakdown dd { margin: 0; font-variant-numeric: tabular-nums; text-align: right; }
+#tiDeductRows dd { color: #ff9b8f; }
+.ti-breakdown-total { border-top: 1px solid #2c3439; margin-top: .375rem; padding-top: .5rem !important; }
+.ti-breakdown-total dt, .ti-breakdown-total dd { color: var(--paper) !important; font-weight: 500; }
+
+.ti-reset {
+    display: block;
+    margin: 1.125rem auto 0;
+    padding: .5rem 1.25rem;
+    min-height: 2.75rem;
+    border: 1.5px solid #3b454c;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--paper);
+    font: inherit;
+    font-size: .9375rem;
+    cursor: pointer;
+}
+.ti-reset:hover { border-color: var(--paper); }
+.ti-reset:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+.ti-fineprint { color: var(--muted); font-size: .875rem; margin: .875rem .5rem 0; }
+.ti-fineprint span { display: block; margin-top: .25rem; }
+
+/* ---------- Mobile summary bar ---------- */
+
+.ti-bar {
+    position: fixed;
+    left: .75rem;
+    right: .75rem;
+    bottom: .75rem;
+    z-index: 1020;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .625rem .75rem .625rem 1.25rem;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--paper);
+    text-decoration: none;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, .25);
+}
+.ti-bar[hidden] { display: none; }
+.ti-bar:hover, .ti-bar:focus { color: var(--paper); }
+.ti-bar:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.ti-bar-label { font-size: .875rem; color: var(--on-ink-muted); }
+.ti-bar-amount { font-weight: 600; font-size: 1.125rem; color: var(--blue); font-variant-numeric: tabular-nums; margin-right: auto; white-space: nowrap; }
+.ti-bar-link { padding: .375rem 1rem; border-radius: 999px; background: var(--blue); color: var(--ink); font-size: .875rem; font-weight: 500; }
+
+@media (max-width: 991.98px) {
+    .ti { padding-bottom: 5.5rem; }
+}
+@media (min-width: 992px) {
+    .ti-bar { display: none !important; }
+}
+
+/* ---------- Disclaimer dialog ---------- */
+
+.ti-dialog {
+    width: min(36rem, calc(100vw - 2rem));
+    max-height: calc(100vh - 2rem);
+    padding: 1.75rem;
+    border: 0;
+    border-radius: 1.5rem;
+    color: var(--ink);
+    font-family: 'Readex Pro', system-ui, sans-serif;
+}
+.ti-dialog::backdrop { background: rgba(0, 0, 0, .6); }
+.ti-dialog h2 { font-size: 1.25rem; font-weight: 600; margin: 0 0 .5rem; }
+.ti-dialog p { color: var(--muted); margin: 0 0 1.25rem; }
+.ti-dialog [lang="ar"] { text-align: right; }
+
+.ti-accept {
+    display: inline-flex;
+    gap: .625rem;
+    align-items: center;
+    width: 100%;
+    justify-content: center;
+    min-height: 3rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--paper);
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+}
+.ti-accept span { color: var(--blue); }
+.ti-accept:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+    .ti * { transition: none !important; scroll-behavior: auto !important; }
+}
+.ti-reset[hidden] { display: none; }
