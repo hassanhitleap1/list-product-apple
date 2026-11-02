@@ -1,16 +1,15 @@
 /* Trade-in price calculator — Action Mobile
-   Brand: logo black, Action blue (#2FA3DD), and the rounded capsule from the "O". */
+   Brand: logo navy (#16203A), Action blue (#00A4FF), and the rounded capsule from the "O". */
 
 .ti {
-    --ink: #000;
+    --ink: #16203a;      /* logo navy */
     --paper: #fff;
-    --mist: #f1f4f6;
-    --line: #d5dde3;
-    --muted: #4f5d68;
-    --blue: #2fa3dd;
-    --blue-ink: #0a6896;
+    --mist: #eef3f8;
+    --line: #d3dde8;
+    --muted: #56627a;
+    --blue: #00a4ff;     /* logo blue */
+    --blue-ink: #0072b8; /* blue for text on white */
     --minus: #b3261e;
-    --on-ink-muted: #a7b3bc;
 
     font-family: 'Readex Pro', system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
     color: var(--ink);
@@ -72,7 +71,7 @@
     margin: 0 0 1.125rem;
 }
 
-/* Step number in a small capsule, like the logo's "O". */
+/* Step number in a small navy capsule, like the logo's "O". */
 .ti-num {
     display: inline-grid;
     place-items: center;
@@ -167,7 +166,7 @@
     padding: .5rem 1rem .5rem 2.75rem;
     border: 1.5px solid var(--line);
     border-radius: 999px;
-    background: var(--mist);
+    background: var(--paper);
     font: inherit;
     color: inherit;
 }
@@ -211,13 +210,15 @@
 .ti-check-text small { color: var(--muted); font-size: .875rem; }
 .ti-deduct { color: var(--minus); font-weight: 500; font-variant-numeric: tabular-nums; }
 
-/* ---------- Result: black panel with a blue capsule, like the logo ---------- */
+/* ---------- Result: white panel with a blue capsule, like the "O" in the logo ---------- */
 
 .ti-tag {
-    background: var(--ink);
-    color: var(--paper);
+    background: var(--paper);
+    color: var(--ink);
+    border: 1px solid var(--line);
     border-radius: 1.75rem;
     padding: 1.5rem 1.5rem 1.25rem;
+    box-shadow: 0 12px 32px rgba(22, 32, 58, .07);
 }
 
 .ti-tag-title {
@@ -228,9 +229,9 @@
     font-weight: 500;
     margin: 0;
 }
-.ti-tag-title .ti-ar { color: var(--on-ink-muted); }
+.ti-tag-title .ti-ar { color: var(--muted); }
 
-.ti-tag-phone { color: var(--on-ink-muted); margin: .25rem 0 1.125rem; min-height: 1.5em; }
+.ti-tag-phone { color: var(--muted); margin: .25rem 0 1.125rem; min-height: 1.5em; }
 
 .ti-capsule {
     display: flex;
@@ -240,7 +241,8 @@
     padding: .875rem 1.25rem;
     border-radius: 999px;
     border: 2px solid var(--blue);
-    color: var(--blue);
+    background: #f0f9ff;
+    color: var(--blue-ink);
     transition: background-color .2s, color .2s;
 }
 .ti-capsule.is-final { background: var(--blue); color: var(--ink); }
@@ -255,30 +257,30 @@
 }
 .ti-currency { font-size: 1rem; font-weight: 500; }
 
-.ti-status { color: var(--on-ink-muted); font-size: .9375rem; text-align: center; margin: .75rem 0 0; }
+.ti-status { color: var(--muted); font-size: .9375rem; text-align: center; margin: .75rem 0 0; }
 
-.ti-breakdown { margin: 1.25rem 0 0; padding-top: 1rem; border-top: 1px solid #2c3439; font-size: .9375rem; }
+.ti-breakdown { margin: 1.25rem 0 0; padding-top: 1rem; border-top: 1px solid var(--line); font-size: .9375rem; }
 .ti-breakdown div:not(#tiDeductRows) { display: flex; justify-content: space-between; gap: 1rem; padding: .25rem 0; }
-.ti-breakdown dt { font-weight: 400; color: var(--on-ink-muted); }
+.ti-breakdown dt { font-weight: 400; color: var(--muted); }
 .ti-breakdown dd { margin: 0; font-variant-numeric: tabular-nums; text-align: right; }
-#tiDeductRows dd { color: #ff9b8f; }
-.ti-breakdown-total { border-top: 1px solid #2c3439; margin-top: .375rem; padding-top: .5rem !important; }
-.ti-breakdown-total dt, .ti-breakdown-total dd { color: var(--paper) !important; font-weight: 500; }
+#tiDeductRows dd { color: var(--minus); }
+.ti-breakdown-total { border-top: 1px solid var(--line); margin-top: .375rem; padding-top: .5rem !important; }
+.ti-breakdown-total dt, .ti-breakdown-total dd { color: var(--ink) !important; font-weight: 500; }
 
 .ti-reset {
     display: block;
     margin: 1.125rem auto 0;
     padding: .5rem 1.25rem;
     min-height: 2.75rem;
-    border: 1.5px solid #3b454c;
+    border: 1.5px solid var(--line);
     border-radius: 999px;
-    background: transparent;
-    color: var(--paper);
+    background: var(--paper);
+    color: var(--ink);
     font: inherit;
     font-size: .9375rem;
     cursor: pointer;
 }
-.ti-reset:hover { border-color: var(--paper); }
+.ti-reset:hover { border-color: var(--ink); }
 .ti-reset:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
 
 .ti-fineprint { color: var(--muted); font-size: .875rem; margin: .875rem .5rem 0; }
@@ -300,12 +302,12 @@
     background: var(--ink);
     color: var(--paper);
     text-decoration: none;
-    box-shadow: 0 6px 24px rgba(0, 0, 0, .25);
+    box-shadow: 0 8px 28px rgba(22, 32, 58, .3);
 }
 .ti-bar[hidden] { display: none; }
 .ti-bar:hover, .ti-bar:focus { color: var(--paper); }
 .ti-bar:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
-.ti-bar-label { font-size: .875rem; color: var(--on-ink-muted); }
+.ti-bar-label { font-size: .875rem; color: #c3cbe0; }
 .ti-bar-amount { font-weight: 600; font-size: 1.125rem; color: var(--blue); font-variant-numeric: tabular-nums; margin-right: auto; white-space: nowrap; }
 .ti-bar-link { padding: .375rem 1rem; border-radius: 999px; background: var(--blue); color: var(--ink); font-size: .875rem; font-weight: 500; }
 
@@ -327,7 +329,7 @@
     color: var(--ink);
     font-family: 'Readex Pro', system-ui, sans-serif;
 }
-.ti-dialog::backdrop { background: rgba(0, 0, 0, .6); }
+.ti-dialog::backdrop { background: rgba(22, 32, 58, .55); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
 .ti-dialog h2 { font-size: 1.25rem; font-weight: 600; margin: 0 0 .5rem; }
 .ti-dialog p { color: var(--muted); margin: 0 0 1.25rem; }
 .ti-dialog [lang="ar"] { text-align: right; }

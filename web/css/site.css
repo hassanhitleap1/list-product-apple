@@ -1,6 +1,79 @@
-main>.container {
-    padding: 70px 15px 20px;
+/* ---------- Brand ---------- */
+:root {
+    --am-navy: #16203a;
+    --am-blue: #00a4ff;
+    --am-blue-ink: #0072b8;
+    --am-bg: #f4f7fb;
+    --am-line: #dde5ee;
+    --am-muted: #56627a;
 }
+
+body {
+    font-family: 'Readex Pro', system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
+    background: var(--am-bg);
+    color: var(--am-navy);
+}
+
+main > .container {
+    padding: 1.5rem 15px 2.5rem;
+}
+
+/* ---------- Navbar ---------- */
+.am-nav {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    background: rgba(255, 255, 255, .92);
+    -webkit-backdrop-filter: saturate(160%) blur(10px);
+    backdrop-filter: saturate(160%) blur(10px);
+    border-bottom: 1px solid var(--am-line);
+}
+
+.am-nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 4.5rem;
+}
+
+.am-brand { display: inline-flex; align-items: center; flex-shrink: 0; }
+.am-brand img { height: 40px; width: auto; display: block; }
+.am-brand:focus-visible { outline: 3px solid var(--am-blue); outline-offset: 4px; border-radius: 6px; }
+
+.am-links { display: flex; gap: .25rem; list-style: none; margin: 0; padding: 0; }
+
+.am-link {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    min-height: 2.5rem;
+    padding: .375rem 1rem;
+    border-radius: 999px;
+    color: var(--am-navy);
+    font-weight: 500;
+    font-size: .9375rem;
+    text-decoration: none;
+    white-space: nowrap;
+}
+.am-link span { font-weight: 400; color: var(--am-muted); }
+.am-link:hover { background: #eaf2fa; color: var(--am-navy); }
+.am-link.is-active { background: #e3f4ff; color: var(--am-blue-ink); }
+.am-link.is-active span { color: var(--am-blue-ink); }
+.am-link:focus-visible { outline: 3px solid var(--am-blue); outline-offset: 2px; }
+
+@media (max-width: 575.98px) {
+    .am-nav-inner { min-height: 3.75rem; }
+    .am-brand img { height: 32px; }
+    .am-link { padding: .375rem .75rem; font-size: .875rem; }
+    .am-link span { display: none; }
+}
+
+/* ---------- Footer ---------- */
+.am-footer { background: #fff; border-top: 1px solid var(--am-line); color: var(--am-muted); font-size: .875rem; }
+.am-footer-inner { display: flex; justify-content: space-between; gap: 1rem; padding-top: 1.125rem; padding-bottom: 1.125rem; }
+
+.breadcrumb a { color: var(--am-blue-ink); }
 
 .footer {
     background-color: #f5f5f5;
