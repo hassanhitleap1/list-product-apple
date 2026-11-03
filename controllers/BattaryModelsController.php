@@ -7,6 +7,7 @@ use app\models\BattaryModels;
 use app\models\BattaryModelsSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 
 /**
@@ -22,6 +23,13 @@ class BattaryModelsController extends Controller
         return array_merge(
             parent::behaviors(),
             [
+                // Back office: signed-in users only. Guests are sent to the login page.
+                'access' => [
+                    'class' => AccessControl::class,
+                    'rules' => [
+                        ['allow' => true, 'roles' => ['@']],
+                    ],
+                ],
                 'verbs' => [
                     'class' => VerbFilter::className(),
                     'actions' => [
