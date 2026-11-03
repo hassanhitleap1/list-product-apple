@@ -16,7 +16,7 @@ use Yii;
  * @property float|null $price_max Highest Grade A price when the price is a range
  * @property int $is_active
  * @property int $sort_order
- * @property string|null $image Photo path under web/, shared by all storage sizes of a model
+ * @property string|null $image Photo: path under web/ (upload) or an https link; shared by all storage sizes of a model
  */
 class IphoneModels extends \yii\db\ActiveRecord
 {
@@ -41,7 +41,7 @@ class IphoneModels extends \yii\db\ActiveRecord
             [['brand'], 'string', 'max' => 50],
             [['name'], 'string', 'max' => 100],
             [['storage'], 'string', 'max' => 20],
-            [['image'], 'string', 'max' => 255],
+            [['image'], 'string', 'max' => 1000],
             [['model'], 'string', 'max' => 255],
             [['brand', 'name', 'storage'], 'trim'],
             [['price_max', 'storage'], 'default', 'value' => null],
@@ -122,7 +122,14 @@ class IphoneModels extends \yii\db\ActiveRecord
     /** Public URL of the photo, or null. */
     public function getImageUrl()
     {
-        return $this->image ? Yii::getAlias('@web/' . ltrim($this->image, '/')) : null;
+        if (!$this->image) {
+            return null;
+        }
+        // A pasted link is used as is; an uploaded file lives under web/.
+        if (preg_match('#^https?://#i', $this->image)) {
+            return $this->image;
+        }
+        return Yii::getAlias('@web/' . ltrim($this->image, '/'));
     }
 
     /** Short stable key for a brand + model name (used in upload field names). */

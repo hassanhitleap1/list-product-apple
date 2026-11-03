@@ -19,7 +19,8 @@ $missing = count(array_filter($groups, function ($g) { return $g['active'] && !$
     <h1><?= Html::encode($this->title) ?></h1>
     <p class="mp-lede">
         One photo per model. It is used for every storage size and shows in the calculator when a customer picks the model and on their offer.
-        Use your own photos, or photos you have permission to use. JPG, PNG or WebP, up to 3&nbsp;MB. A square photo on a white or transparent background looks best.
+        Upload a photo, or paste a link to an image online (right-click the image › Copy image address).
+        Use your own photos, or photos you have permission to use. Uploads: JPG, PNG or WebP, up to 3&nbsp;MB. A square photo on a white or transparent background looks best.
     </p>
     <?php if ($missing): ?>
         <p class="mp-missing"><?= $missing ?> model<?= $missing === 1 ? '' : 's' ?> on the site still have no photo. They show a drawing instead.</p>
@@ -49,6 +50,10 @@ $missing = count(array_filter($groups, function ($g) { return $g['active'] && !$
                             <input type="file" name="photo[<?= $key ?>]" accept="image/jpeg,image/png,image/webp" data-preview="mp-photo-<?= $key ?>">
                             <span><?= $g['imageUrl'] ? 'Replace photo' : 'Upload photo' ?></span>
                         </label>
+                        <?php $isLink = $g['image'] && preg_match('#^https?://#i', $g['image']); ?>
+                        <input type="url" class="mp-link" name="link[<?= $key ?>]" placeholder="or paste image link (https://…)"
+                               value="<?= $isLink ? Html::encode($g['image']) : '' ?>" aria-label="Image link for <?= Html::encode($g['name']) ?>"
+                               data-preview="mp-photo-<?= $key ?>">
                         <?php if ($g['imageUrl']): ?>
                             <label class="mp-remove">
                                 <input type="checkbox" name="remove[]" value="<?= $key ?>"> Remove photo
@@ -87,6 +92,9 @@ $this->registerCss(<<<CSS
 .mp-upload:hover span { border-color: #16203a; }
 .mp-upload input:focus-visible + span { outline: 3px solid #00a4ff; outline-offset: 2px; }
 .mp-upload.is-chosen span { background: #e3f4ff; border-color: #00a4ff; color: #0072b8; }
+.mp-link { display: block; width: 100%; margin-top: .375rem; padding: .25rem .625rem; border: 1.5px solid #dde5ee; border-radius: 999px; font-size: .8125rem; }
+.mp-link:focus { outline: 3px solid #00a4ff; outline-offset: 1px; border-color: #16203a; }
+.mp-link.is-bad { border-color: #b3261e; }
 .mp-remove { display: block; font-size: .8125rem; color: #b3261e; margin: .375rem 0 0; }
 .mp-save { position: sticky; bottom: 0; display: flex; justify-content: flex-end; align-items: center; gap: 1rem; margin-top: 1.5rem; padding: .875rem 0; background: linear-gradient(to top, #f4f7fb 70%, rgba(244,247,251,0)); }
 #mpCount { color: #56627a; font-size: .9375rem; }
@@ -111,6 +119,19 @@ $this->registerJs(<<<JS
                 wrap.querySelector('span').textContent = f.name;
             }
             label.textContent = count ? count + ' new photo' + (count === 1 ? '' : 's') + ' ready to save' : 'No new photos chosen';
+        });
+    });
+    document.querySelectorAll('#mpForm .mp-link').forEach(function (input) {
+        input.addEventListener('change', function () {
+            var url = input.value.trim();
+            if (!/^https?:\/\//i.test(url)) { input.classList.toggle('is-bad', url !== ''); return; }
+            var box = document.getElementById(input.dataset.preview);
+            var img = document.createElement('img');
+            img.alt = '';
+            img.onload = function () { input.classList.remove('is-bad'); box.textContent = ''; box.appendChild(img); };
+            img.onerror = function () { input.classList.add('is-bad'); input.title = 'This link does not open as an image.'; };
+            img.src = url;
+            label.textContent = 'Links changed. Press Save photos.';
         });
     });
 })();
