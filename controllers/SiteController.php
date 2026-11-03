@@ -10,7 +10,6 @@ use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\IphoneModels;
-use app\models\BattaryModels;
 
 class SiteController extends Controller
 {
@@ -63,26 +62,9 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        $batteries = [];
-        foreach (BattaryModels::find()->orderBy(['price' => SORT_ASC, 'id' => SORT_ASC])->all() as $b) {
-            $deduct = (float)$b->price;
-            // Stored as a share (0.1). Accept whole percents (10) too.
-            if ($deduct > 1) {
-                $deduct = $deduct / 100;
-            }
-            $batteries[] = ['id' => (int)$b->id, 'label' => $b->value, 'deduct' => $deduct];
-        }
-
-        $damages = [];
-        foreach (Yii::$app->params['tradeInDamages'] ?? [] as $key => $d) {
-            $damages[] = ['id' => $key] + $d;
-        }
-
         return $this->render('index', [
             'catalog' => IphoneModels::catalog(),
-            'batteries' => $batteries,
-            'damages' => $damages,
-            'lowFactor' => (float)(Yii::$app->params['tradeInLowFactor'] ?? 0.75),
+            'checklist' => Yii::$app->params['tradeInChecklist'],
         ]);
     }
 

@@ -1,292 +1,280 @@
-/* Trade-in price calculator — Action Mobile
-   Brand: logo navy (#16203A), Action blue (#00A4FF), and the rounded capsule from the "O". */
+/* Trade-in checklist calculator — Action Mobile
+   Brand: logo navy (#16203A), Action blue (#00A4FF), capsule shapes from the "O". */
 
 .ti {
-    --ink: #16203a;      /* logo navy */
+    --ink: #16203a;
     --paper: #fff;
     --mist: #eef3f8;
     --line: #d3dde8;
     --muted: #56627a;
-    --blue: #00a4ff;     /* logo blue */
-    --blue-ink: #0072b8; /* blue for text on white */
+    --blue: #00a4ff;
+    --blue-soft: #e3f4ff;
+    --blue-ink: #0072b8;
     --minus: #b3261e;
+    --stop: #9a3412;
+    --stop-soft: #fff1e8;
 
     font-family: 'Readex Pro', system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
     color: var(--ink);
-    font-size: 1rem;
     line-height: 1.5;
     padding-bottom: 2rem;
 }
 
-.ti [lang="ar"] { font-family: 'Readex Pro', Tahoma, sans-serif; }
+.ti-ar { font-size: .9375rem; font-weight: 400; color: var(--muted); }
 
 /* ---------- Intro ---------- */
 
-.ti-intro { max-width: 40rem; margin: 1.5rem 0 2rem; }
-
-.ti-intro h1 {
-    font-size: clamp(2rem, 5vw, 2.875rem);
-    font-weight: 600;
-    line-height: 1.08;
-    letter-spacing: -0.02em;
-    margin: 0;
-}
-
-.ti-intro-ar {
-    font-size: 1.25rem;
-    font-weight: 400;
-    color: var(--blue-ink);
-    margin: .5rem 0 0;
-    text-align: left;
-}
-
-.ti-lede { color: var(--muted); font-size: 1.0625rem; margin: .875rem 0 0; max-width: 34rem; }
+.ti-intro { max-width: 40rem; margin: .5rem 0 1.75rem; }
+.ti-intro h1 { font-size: clamp(1.875rem, 5vw, 2.625rem); font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; margin: 0; }
+.ti-intro-ar { font-size: 1.1875rem; color: var(--blue-ink); margin: .375rem 0 0; text-align: left; }
+.ti-lede { color: var(--muted); font-size: 1.0625rem; margin: .75rem 0 0; max-width: 34rem; }
 
 /* ---------- Layout ---------- */
 
-.ti-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 2rem;
-    align-items: start;
-}
+.ti-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem; align-items: start; }
 
 @media (min-width: 992px) {
-    .ti-grid { grid-template-columns: minmax(0, 1fr) 22.5rem; gap: 3.5rem; }
-    .ti-result { position: sticky; top: 5.5rem; }
+    .ti-grid { grid-template-columns: minmax(0, 1fr) 21rem; gap: 2.5rem; }
+    .ti-side { position: sticky; top: 6rem; }
 }
 
-/* ---------- Steps ---------- */
+/* ---------- Wizard card ---------- */
 
-.ti-step { padding: 1.75rem 0; border-top: 1px solid var(--line); }
-.ti-step:first-child { border-top: 0; padding-top: 0; }
+.ti-wizard {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 1.75rem;
+    padding: 1.5rem;
+    box-shadow: 0 12px 32px rgba(22, 32, 58, .06);
+}
+@media (min-width: 768px) { .ti-wizard { padding: 2rem 2.25rem; } }
 
-.ti-step h2 {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: .25rem .75rem;
-    font-size: 1.3125rem;
+.ti-progress { margin-bottom: 1.5rem; }
+.ti-progress-track { height: .5rem; border-radius: 999px; background: var(--mist); overflow: hidden; }
+.ti-progress-track span { display: block; height: 100%; width: 0; border-radius: 999px; background: var(--blue); transition: width .3s ease; }
+.ti-progress-text { margin: .5rem 0 0; font-size: .875rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+.ti-stage { outline: none; min-height: 18rem; }
+
+.ti-q-title {
+    font-size: clamp(1.375rem, 3.5vw, 1.75rem);
     font-weight: 600;
-    margin: 0 0 1.125rem;
-}
-
-/* Step number in a small navy capsule, like the logo's "O". */
-.ti-num {
-    display: inline-grid;
-    place-items: center;
-    width: 2.75rem;
-    height: 1.625rem;
-    border-radius: 999px;
-    background: var(--ink);
-    color: var(--blue);
-    font-size: .9375rem;
-    font-weight: 600;
-}
-
-.ti-ar { font-size: .9375rem; font-weight: 400; color: var(--muted); }
-
-.ti-field { border: 0; padding: 0; margin: 0 0 1.25rem; min-width: 0; }
-.ti-field:last-child { margin-bottom: 0; }
-
-.ti-label {
+    line-height: 1.2;
+    margin: 0 0 1.25rem;
     display: flex;
-    gap: .625rem;
-    align-items: baseline;
-    font-size: .9375rem;
-    font-weight: 500;
-    color: var(--muted);
-    margin-bottom: .625rem;
-    float: none;
-    width: auto;
-    padding: 0;
+    flex-direction: column;
+    gap: .375rem;
 }
+.ti-q-ar { font-size: 1.0625rem; font-weight: 400; color: var(--blue-ink); text-align: left; }
 
-.ti-help { color: var(--muted); font-size: .9375rem; margin: -.5rem 0 1rem; max-width: 38rem; }
+.ti-q-help { color: var(--muted); font-size: .9375rem; margin: -.5rem 0 1.25rem; max-width: 38rem; }
+.ti-q-help-ar { display: block; margin-top: .125rem; text-align: left; }
 
+.ti-label { display: flex; gap: .625rem; align-items: baseline; font-size: .9375rem; font-weight: 500; color: var(--muted); margin: 1.25rem 0 .625rem; }
 .ti-empty { color: var(--muted); margin: .25rem 0 0; }
 
-/* ---------- Pills (radio options) ---------- */
+/* ---------- Choices ---------- */
 
-.ti-pills { display: flex; flex-wrap: wrap; gap: .5rem; }
-.ti-pills--stack { flex-direction: column; align-items: stretch; max-width: 30rem; }
+.ti-choices { display: grid; gap: .625rem; max-width: 32rem; }
+.ti-choices--row { display: flex; flex-wrap: wrap; gap: .5rem; max-width: none; }
 
-.ti-pill { position: relative; margin: 0; cursor: pointer; }
-
-.ti-pill input {
-    position: absolute;
-    opacity: 0;
-    width: 1px;
-    height: 1px;
-    pointer-events: none;
-}
-
-.ti-pill > span {
+.ti-choice {
     display: flex;
     align-items: center;
-    flex-wrap: wrap;
-    gap: .125rem .625rem;
-    min-height: 2.75rem;
-    padding: .5rem 1.125rem;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    min-height: 3.5rem;
+    padding: .75rem 1.25rem;
     border: 1.5px solid var(--line);
-    border-radius: 999px;
+    border-radius: 1.25rem;
     background: var(--paper);
-    font-weight: 400;
-    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    font: inherit;
+    font-size: 1.0625rem;
+    text-align: left;
+    cursor: pointer;
     transition: background-color .12s, border-color .12s;
 }
+.ti-choice:hover { border-color: var(--ink); }
+.ti-choice:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.ti-choice[aria-checked="true"] { background: var(--blue); border-color: var(--blue); font-weight: 500; }
 
-.ti-pills--stack .ti-pill > span { border-radius: 1.375rem; padding: .75rem 1.25rem; }
+.ti-choice-text { display: flex; flex-direction: column; line-height: 1.3; }
+.ti-choice-text small { font-size: .875rem; color: var(--muted); font-weight: 400; }
+.ti-choice[aria-checked="true"] small { color: var(--ink); }
 
-.ti-pill small { color: var(--muted); font-size: .875rem; }
-.ti-pill-deduct { font-style: normal; font-size: .875rem; color: var(--minus); }
-
-.ti-pill:hover > span { border-color: var(--ink); }
-
-.ti-pill input:checked + span {
-    background: var(--blue);
-    border-color: var(--blue);
-    font-weight: 500;
+.ti-choice--pill {
+    width: auto;
+    min-height: 2.75rem;
+    padding: .5rem 1.125rem;
+    border-radius: 999px;
+    font-size: 1rem;
+    font-variant-numeric: tabular-nums;
 }
-.ti-pill input:checked + span small,
-.ti-pill input:checked + span .ti-pill-deduct { color: var(--ink); }
 
-.ti-pill input:focus-visible + span { outline: 3px solid var(--ink); outline-offset: 2px; }
-
-.ti-pills--brand .ti-pill > span { font-size: 1.0625rem; padding-inline: 1.5rem; }
+.ti-badge {
+    flex-shrink: 0;
+    padding: .125rem .625rem;
+    border-radius: 999px;
+    background: #fdecea;
+    color: var(--minus);
+    font-size: .875rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+}
+.ti-badge--stop { background: var(--stop-soft); color: var(--stop); }
+.ti-choice[aria-checked="true"] .ti-badge { background: rgba(255, 255, 255, .85); }
 
 /* ---------- Search ---------- */
 
-.ti-search { position: relative; max-width: 24rem; margin: 0 0 1.25rem; }
-.ti-search svg { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--muted); }
-
-.ti-search input {
+.ti-search { position: relative; max-width: 24rem; margin: 1rem 0 0; }
+.ti-search::before {
+    content: '';
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    width: 18px;
+    height: 18px;
+    transform: translateY(-50%);
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Ccircle cx='8.5' cy='8.5' r='6' fill='none' stroke='%2356627a' stroke-width='2'/%3E%3Cpath d='M13 13l5 5' stroke='%2356627a' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.ti-search-input {
     width: 100%;
     min-height: 2.875rem;
     padding: .5rem 1rem .5rem 2.75rem;
     border: 1.5px solid var(--line);
     border-radius: 999px;
-    background: var(--paper);
+    background: var(--mist);
     font: inherit;
     color: inherit;
 }
-.ti-search input:focus { outline: 3px solid var(--blue); outline-offset: 1px; border-color: var(--ink); background: var(--paper); }
+.ti-search-input:focus { outline: 3px solid var(--blue); outline-offset: 1px; border-color: var(--ink); background: var(--paper); }
 
-/* ---------- Damage checkboxes ---------- */
+/* ---------- Confirm box ---------- */
 
-.ti-checks { display: grid; gap: .5rem; max-width: 30rem; }
+.ti-confirm { margin-top: 1rem; max-width: 32rem; padding: 1rem 1.125rem; border-radius: 1.25rem; background: var(--blue-soft); }
+.ti-confirm-label { display: grid; grid-template-columns: 1.375rem 1fr; gap: .875rem; align-items: start; margin: 0; cursor: pointer; position: relative; }
+.ti-confirm-label input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.ti-confirm-label small { display: block; color: var(--muted); margin-top: .25rem; text-align: left; }
 
-.ti-check {
-    position: relative;
-    display: grid;
-    grid-template-columns: 1.375rem 1fr auto;
+.ti-check-box { width: 1.375rem; height: 1.375rem; margin-top: .125rem; border: 2px solid var(--ink); border-radius: .4rem; background: var(--paper); }
+.ti-confirm-label input:checked + .ti-check-box {
+    background: var(--ink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%2300a4ff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 85% no-repeat;
+}
+.ti-confirm-label input:focus-visible + .ti-check-box { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+/* ---------- Scratch drawing ---------- */
+
+.ti-scratch { margin: 1.5rem 0 0; }
+.ti-scratch-pair { display: flex; gap: 1.5rem; justify-content: flex-start; flex-wrap: wrap; }
+.ti-scratch-cell { display: flex; flex-direction: column; align-items: center; gap: .5rem; font-size: .875rem; color: var(--muted); }
+.ti-scratch-cell svg { width: 104px; height: auto; }
+.ti-scratch figcaption { margin-top: .75rem; color: var(--muted); font-size: .9375rem; }
+
+/* ---------- Buttons ---------- */
+
+.ti-nav { display: flex; justify-content: space-between; gap: .75rem; margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid var(--line); }
+
+.ti-btn {
+    display: inline-flex;
     align-items: center;
-    gap: .875rem;
-    min-height: 3.25rem;
-    padding: .625rem 1.125rem;
-    border: 1.5px solid var(--line);
-    border-radius: 1rem;
-    cursor: pointer;
-    margin: 0;
-}
-.ti-check:hover { border-color: var(--ink); }
-
-.ti-check input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-
-.ti-check-box {
-    width: 1.375rem;
-    height: 1.375rem;
-    border: 2px solid var(--muted);
-    border-radius: .4rem;
-    background: var(--paper);
-}
-.ti-check input:checked ~ .ti-check-box {
-    background: var(--ink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%232fa3dd' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 85% no-repeat;
-    border-color: var(--ink);
-}
-.ti-check input:focus-visible ~ .ti-check-box { outline: 3px solid var(--blue); outline-offset: 2px; }
-
-.ti-check-text { display: flex; flex-direction: column; line-height: 1.3; }
-.ti-check-text small { color: var(--muted); font-size: .875rem; }
-.ti-deduct { color: var(--minus); font-weight: 500; font-variant-numeric: tabular-nums; }
-
-/* ---------- Result: white panel with a blue capsule, like the "O" in the logo ---------- */
-
-.ti-tag {
-    background: var(--paper);
-    color: var(--ink);
-    border: 1px solid var(--line);
-    border-radius: 1.75rem;
-    padding: 1.5rem 1.5rem 1.25rem;
-    box-shadow: 0 12px 32px rgba(22, 32, 58, .07);
-}
-
-.ti-tag-title {
-    display: flex;
-    justify-content: space-between;
+    justify-content: center;
     gap: .5rem;
-    font-size: 1rem;
+    min-height: 3rem;
+    padding: .5rem 1.375rem;
+    border-radius: 999px;
+    border: 1.5px solid transparent;
+    font: inherit;
     font-weight: 500;
-    margin: 0;
+    cursor: pointer;
 }
-.ti-tag-title .ti-ar { color: var(--muted); }
+.ti-btn[hidden] { display: none; }
+.ti-btn span[lang="ar"] { font-weight: 400; opacity: .85; }
+.ti-btn:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.ti-btn--primary { background: var(--ink); color: var(--paper); margin-left: auto; }
+.ti-btn--primary span[lang="ar"] { color: var(--blue); opacity: 1; }
+.ti-btn--primary:hover { background: #24304f; }
+.ti-btn--ghost { background: var(--paper); border-color: var(--line); color: var(--ink); }
+.ti-btn--ghost:hover { border-color: var(--ink); }
+.ti-btn--block { width: 100%; }
 
-.ti-tag-phone { color: var(--muted); margin: .25rem 0 1.125rem; min-height: 1.5em; }
+/* ---------- Result ---------- */
+
+.ti-result-phone { color: var(--muted); margin: -.75rem 0 1rem; }
 
 .ti-capsule {
     display: flex;
     align-items: baseline;
     justify-content: center;
     gap: .5rem;
-    padding: .875rem 1.25rem;
+    max-width: 26rem;
+    padding: 1rem 1.25rem;
     border-radius: 999px;
-    border: 2px solid var(--blue);
-    background: #f0f9ff;
-    color: var(--blue-ink);
-    transition: background-color .2s, color .2s;
+    background: var(--blue);
+    color: var(--ink);
 }
-.ti-capsule.is-final { background: var(--blue); color: var(--ink); }
-
-.ti-amount {
-    font-size: clamp(1.75rem, 6vw, 2.25rem);
-    font-weight: 600;
-    line-height: 1.1;
-    letter-spacing: -0.01em;
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-}
+.ti-amount { font-size: clamp(1.875rem, 7vw, 2.5rem); font-weight: 600; line-height: 1.1; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .ti-currency { font-size: 1rem; font-weight: 500; }
 
-.ti-status { color: var(--muted); font-size: .9375rem; text-align: center; margin: .75rem 0 0; }
+.ti-average { max-width: 26rem; text-align: center; margin: .75rem 0 0; color: var(--muted); }
+.ti-average strong { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
 
-.ti-breakdown { margin: 1.25rem 0 0; padding-top: 1rem; border-top: 1px solid var(--line); font-size: .9375rem; }
-.ti-breakdown div:not(#tiDeductRows) { display: flex; justify-content: space-between; gap: 1rem; padding: .25rem 0; }
+.ti-breakdown { max-width: 26rem; margin: 1.5rem 0 0; font-size: .9375rem; }
+.ti-breakdown > div { display: flex; justify-content: space-between; gap: 1rem; padding: .375rem 0; border-bottom: 1px solid var(--mist); }
 .ti-breakdown dt { font-weight: 400; color: var(--muted); }
-.ti-breakdown dd { margin: 0; font-variant-numeric: tabular-nums; text-align: right; }
-#tiDeductRows dd { color: var(--minus); }
-.ti-breakdown-total { border-top: 1px solid var(--line); margin-top: .375rem; padding-top: .5rem !important; }
-.ti-breakdown-total dt, .ti-breakdown-total dd { color: var(--ink) !important; font-weight: 500; }
+.ti-breakdown dd { margin: 0; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.ti-breakdown .is-minus dd { color: var(--minus); }
+.ti-breakdown .is-total { border-bottom: 0; border-top: 1.5px solid var(--line); margin-top: .25rem; }
+.ti-breakdown .is-total dt, .ti-breakdown .is-total dd { color: var(--ink); font-weight: 500; }
 
-.ti-reset {
-    display: block;
-    margin: 1.125rem auto 0;
-    padding: .5rem 1.25rem;
-    min-height: 2.75rem;
-    border: 1.5px solid var(--line);
-    border-radius: 999px;
-    background: var(--paper);
-    color: var(--ink);
+.ti-result-note { max-width: 26rem; color: var(--muted); font-size: .9375rem; margin: 1.25rem 0; }
+.ti-result-note span { display: block; text-align: left; margin-top: .25rem; }
+
+/* ---------- Side panel ---------- */
+
+.ti-panel { background: var(--paper); border: 1px solid var(--line); border-radius: 1.5rem; padding: 1.25rem 1.25rem .75rem; }
+.ti-panel-title { display: flex; justify-content: space-between; gap: .5rem; font-size: 1rem; font-weight: 500; margin: 0; }
+.ti-panel-phone { color: var(--muted); margin: .25rem 0 .75rem; }
+
+.ti-mini { display: flex; align-items: baseline; justify-content: space-between; padding: .625rem 1rem; border-radius: 999px; background: var(--blue-soft); margin-bottom: .75rem; }
+.ti-mini[hidden] { display: none; }
+.ti-mini-label { font-size: .875rem; color: var(--muted); }
+.ti-mini-amount { font-weight: 600; font-size: 1.125rem; color: var(--blue-ink); font-variant-numeric: tabular-nums; }
+
+.ti-answers { list-style: none; margin: 0; padding: 0; }
+.ti-answers li + li { border-top: 1px solid var(--mist); }
+.ti-answer {
+    display: flex;
+    justify-content: space-between;
+    gap: .75rem;
+    width: 100%;
+    padding: .5rem .25rem;
+    border: 0;
+    background: none;
     font: inherit;
-    font-size: .9375rem;
+    font-size: .875rem;
+    color: var(--ink);
+    text-align: left;
     cursor: pointer;
+    border-radius: .5rem;
 }
-.ti-reset:hover { border-color: var(--ink); }
-.ti-reset:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.ti-answer:hover .ti-answer-q { color: var(--ink); text-decoration: underline; }
+.ti-answer:focus-visible { outline: 3px solid var(--blue); outline-offset: 1px; }
+.ti-answer-q { color: var(--muted); }
+.ti-answer-a { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.ti-answers .is-minus .ti-answer-a { color: var(--minus); }
+.ti-answers .is-stop .ti-answer-a { color: var(--stop); font-weight: 500; }
 
 .ti-fineprint { color: var(--muted); font-size: .875rem; margin: .875rem .5rem 0; }
 .ti-fineprint span { display: block; margin-top: .25rem; }
 
-/* ---------- Mobile summary bar ---------- */
+@media (max-width: 991.98px) {
+    .ti-side .ti-panel { display: none; }
+    .ti { padding-bottom: 5.5rem; }
+}
+
+/* ---------- Mobile running offer ---------- */
 
 .ti-bar {
     position: fixed;
@@ -297,31 +285,22 @@
     display: flex;
     align-items: center;
     gap: .75rem;
-    padding: .625rem .75rem .625rem 1.25rem;
+    padding: .75rem 1.25rem;
     border-radius: 999px;
     background: var(--ink);
     color: var(--paper);
-    text-decoration: none;
     box-shadow: 0 8px 28px rgba(22, 32, 58, .3);
 }
 .ti-bar[hidden] { display: none; }
-.ti-bar:hover, .ti-bar:focus { color: var(--paper); }
-.ti-bar:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
 .ti-bar-label { font-size: .875rem; color: #c3cbe0; }
 .ti-bar-amount { font-weight: 600; font-size: 1.125rem; color: var(--blue); font-variant-numeric: tabular-nums; margin-right: auto; white-space: nowrap; }
-.ti-bar-link { padding: .375rem 1rem; border-radius: 999px; background: var(--blue); color: var(--ink); font-size: .875rem; font-weight: 500; }
+.ti-bar-step { font-size: .875rem; color: #c3cbe0; font-variant-numeric: tabular-nums; }
+@media (min-width: 992px) { .ti-bar { display: none !important; } }
 
-@media (max-width: 991.98px) {
-    .ti { padding-bottom: 5.5rem; }
-}
-@media (min-width: 992px) {
-    .ti-bar { display: none !important; }
-}
-
-/* ---------- Disclaimer dialog ---------- */
+/* ---------- Dialogs ---------- */
 
 .ti-dialog {
-    width: min(36rem, calc(100vw - 2rem));
+    width: min(34rem, calc(100vw - 2rem));
     max-height: calc(100vh - 2rem);
     padding: 1.75rem;
     border: 0;
@@ -333,26 +312,17 @@
 .ti-dialog h2 { font-size: 1.25rem; font-weight: 600; margin: 0 0 .5rem; }
 .ti-dialog p { color: var(--muted); margin: 0 0 1.25rem; }
 .ti-dialog [lang="ar"] { text-align: right; }
+.ti-dialog .ti-btn [lang="ar"] { text-align: inherit; }
 
-.ti-accept {
-    display: inline-flex;
-    gap: .625rem;
-    align-items: center;
-    width: 100%;
-    justify-content: center;
-    min-height: 3rem;
-    border: 0;
-    border-radius: 999px;
-    background: var(--ink);
-    color: var(--paper);
-    font: inherit;
-    font-weight: 500;
-    cursor: pointer;
-}
-.ti-accept span { color: var(--blue); }
-.ti-accept:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+.ti-dialog--reject { text-align: left; }
+.ti-reject-icon { display: inline-grid; place-items: center; width: 3rem; height: 3rem; border-radius: 999px; background: var(--stop-soft); color: var(--stop); margin-bottom: .75rem; }
+.ti-reject-reason { display: inline-block; padding: .25rem .75rem; border-radius: 999px; background: var(--stop-soft); color: var(--stop) !important; font-size: .875rem; }
+.ti-reject-reason[hidden] { display: none; }
+.ti-dialog--reject p:not(.ti-reject-reason) { color: var(--ink); font-size: 1.0625rem; }
+.ti-reject-ar { font-size: 1.125rem !important; }
+.ti-dialog-actions { display: flex; flex-wrap: wrap; gap: .625rem; }
+.ti-dialog-actions .ti-btn--primary { margin-left: 0; }
 
 @media (prefers-reduced-motion: reduce) {
     .ti * { transition: none !important; scroll-behavior: auto !important; }
 }
-.ti-reset[hidden] { display: none; }
