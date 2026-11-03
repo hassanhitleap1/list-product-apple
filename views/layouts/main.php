@@ -21,18 +21,15 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
 $this->registerLinkTag(['rel' => 'apple-touch-icon', 'href' => Yii::getAlias('@web/apple-touch-icon.png')]);
 
 $controllerId = Yii::$app->controller->id;
-$isAdmin = in_array($controllerId, ['iphone-models', 'battary-models'], true);
+$actionId = Yii::$app->controller->action->id ?? '';
+$isGuest = Yii::$app->user->isGuest;
 
-// Links shown in the navbar. Admin links only appear on the admin pages.
-$navItems = $isAdmin
-    ? [
-        ['label' => 'Phones & prices', 'url' => ['/iphone-models/index'], 'active' => $controllerId === 'iphone-models' && Yii::$app->controller->action->id !== 'photos'],
-        ['label' => 'Model photos', 'url' => ['/iphone-models/photos'], 'active' => $controllerId === 'iphone-models' && Yii::$app->controller->action->id === 'photos'],
-        ['label' => 'Calculator', 'url' => ['/site/index'], 'active' => false],
-    ]
-    : [
-        ['label' => 'Trade-in calculator', 'label_ar' => 'حاسبة الاستبدال', 'url' => ['/site/index'], 'active' => $controllerId === 'site' && Yii::$app->controller->action->id === 'index'],
-    ];
+// The menu is only for signed-in staff. Guests see the logo and nothing else.
+$navItems = $isGuest ? [] : [
+    ['label' => 'Phones & prices', 'url' => ['/iphone-models/index'], 'active' => $controllerId === 'iphone-models' && $actionId !== 'photos'],
+    ['label' => 'Model photos', 'url' => ['/iphone-models/photos'], 'active' => $controllerId === 'iphone-models' && $actionId === 'photos'],
+    ['label' => 'Calculator', 'url' => ['/site/index'], 'active' => $controllerId === 'site' && $actionId === 'index'],
+];
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -49,18 +46,25 @@ $navItems = $isAdmin
         <a class="am-brand" href="<?= Url::home() ?>" aria-label="Action Mobile home">
             <?= Html::img('@web/image/logo-nav.png', ['alt' => 'Action Mobile', 'width' => 236, 'height' => 40]) ?>
         </a>
-        <nav aria-label="Main">
+        <?php if (!$isGuest): ?>
+        <button type="button" class="am-menu-toggle" aria-expanded="false" aria-controls="amMenu">
+            <svg aria-hidden="true" viewBox="0 0 20 20" width="20" height="20"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Menu
+        </button>
+        <nav aria-label="Main" class="am-menu" id="amMenu">
             <ul class="am-links">
                 <?php foreach ($navItems as $item): ?>
                     <li>
-                        <a href="<?= Url::to($item['url']) ?>" class="am-link<?= $item['active'] ? ' is-active' : '' ?>"<?= $item['active'] ? ' aria-current="page"' : '' ?>>
-                            <?= Html::encode($item['label']) ?>
-                            <?php if (!empty($item['label_ar'])): ?><span lang="ar"><?= Html::encode($item['label_ar']) ?></span><?php endif; ?>
-                        </a>
+                        <a href="<?= Url::to($item['url']) ?>" class="am-link<?= $item['active'] ? ' is-active' : '' ?>"<?= $item['active'] ? ' aria-current="page"' : '' ?>><?= Html::encode($item['label']) ?></a>
                     </li>
                 <?php endforeach; ?>
             </ul>
+            <?= Html::beginForm(['/site/logout'], 'post', ['class' => 'am-logout']) ?>
+                <span class="am-user"><?= Html::encode(Yii::$app->user->identity->username) ?></span>
+                <button type="submit" class="am-link am-link--out">Log out</button>
+            <?= Html::endForm() ?>
         </nav>
+        <?php endif; ?>
     </div>
 </header>
 
@@ -81,6 +85,19 @@ $navItems = $isAdmin
     </div>
 </footer>
 
+<?php if (!$isGuest): ?>
+<script>
+(function () {
+    var t = document.querySelector('.am-menu-toggle'), m = document.getElementById('amMenu');
+    if (!t || !m) return;
+    t.addEventListener('click', function () {
+        var open = t.getAttribute('aria-expanded') !== 'true';
+        t.setAttribute('aria-expanded', String(open));
+        m.classList.toggle('is-open', open);
+    });
+})();
+</script>
+<?php endif; ?>
 <?php $this->endBody() ?>
 </body>
 </html>

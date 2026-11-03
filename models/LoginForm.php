@@ -13,6 +13,9 @@ use yii\base\Model;
  */
 class LoginForm extends Model
 {
+    const MAX_FAILS = 5;
+    const LOCK_SECONDS = 900;
+
     public $username;
     public $password;
     public $rememberMe = true;
@@ -44,13 +47,26 @@ class LoginForm extends Model
      */
     public function validatePassword($attribute, $params)
     {
-        if (!$this->hasErrors()) {
-            $user = $this->getUser();
-
-            if (!$user || !$user->validatePassword($this->password)) {
-                $this->addError($attribute, 'Incorrect username or password.');
-            }
+        if ($this->hasErrors()) {
+            return;
         }
+        // Slow down password guessing: 5 wrong tries per IP + username, then wait 15 minutes.
+        $cache = Yii::$app->cache ?: new \yii\caching\ArrayCache();
+        $ip = Yii::$app->request instanceof \yii\web\Request ? (string)Yii::$app->request->userIP : 'cli';
+        $key = ['login-fail', $ip, mb_strtolower((string)$this->username)];
+        $fails = (int)$cache->get($key);
+        if ($fails >= self::MAX_FAILS) {
+            $this->addError($attribute, 'Too many wrong attempts. Try again in 15 minutes.');
+            return;
+        }
+
+        $user = $this->getUser();
+        if (!$user || !$user->validatePassword($this->password)) {
+            $cache->set($key, $fails + 1, self::LOCK_SECONDS);
+            $this->addError($attribute, 'Incorrect username or password.');
+            return;
+        }
+        $cache->delete($key);
     }
 
     /**

@@ -76,12 +76,13 @@ class SiteController extends Controller
     public function actionLogin()
     {
         if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
+            return $this->redirect(['/iphone-models/index']);
         }
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+            // Back to the admin page they tried to open, or the prices page.
+            return $this->goBack(['/iphone-models/index']);
         }
 
         $model->password = '';
