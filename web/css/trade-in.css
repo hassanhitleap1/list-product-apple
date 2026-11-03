@@ -361,6 +361,24 @@
 .ti-reject-reason[hidden] { display: none; }
 .ti-dialog--reject p:not(.ti-reject-reason) { color: var(--ink); font-size: 1.0625rem; }
 .ti-reject-ar { font-size: 1.125rem !important; }
+.ti-call {
+    display: flex;
+    align-items: center;
+    gap: .625rem;
+    margin: 0 0 1.25rem;
+    padding: .75rem 1.125rem;
+    border-radius: 999px;
+    background: var(--blue-soft);
+    color: var(--ink);
+    text-decoration: none;
+    font-weight: 500;
+}
+.ti-call svg { color: var(--blue-ink); flex-shrink: 0; }
+.ti-call > span { white-space: nowrap; }
+.ti-call span span { font-weight: 400; color: var(--muted); margin-left: .25rem; }
+.ti-call strong { margin-left: auto; font-size: 1.125rem; color: var(--blue-ink); font-variant-numeric: tabular-nums; letter-spacing: .02em; }
+.ti-call:hover { background: #d3edff; color: var(--ink); }
+.ti-call:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
 .ti-dialog-actions { display: flex; flex-wrap: wrap; gap: .625rem; }
 .ti-dialog-actions .ti-btn--primary { margin-left: 0; }
 

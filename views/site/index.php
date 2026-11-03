@@ -80,6 +80,13 @@ $this->registerJs('window.TRADE_IN = ' . Json::htmlEncode([
         <p class="ti-reject-reason" id="tiRejectReason"></p>
         <p><?= Html::encode($checklist['rejectMessage']) ?></p>
         <p lang="ar" dir="rtl" class="ti-reject-ar"><?= Html::encode($checklist['rejectMessage_ar']) ?></p>
+        <?php if (!empty($checklist['branchPhone'])): ?>
+            <a class="ti-call" href="tel:<?= Html::encode($checklist['branchPhoneIntl'] ?? $checklist['branchPhone']) ?>">
+                <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z" fill="currentColor"/></svg>
+                <span>Call us <span lang="ar">اتصل بنا</span></span>
+                <strong dir="ltr"><?= Html::encode($checklist['branchPhone']) ?></strong>
+            </a>
+        <?php endif; ?>
         <div class="ti-dialog-actions">
             <button type="button" class="ti-btn ti-btn--primary" id="tiRejectRestart">Start over <span lang="ar">ابدأ من جديد</span></button>
             <button type="button" class="ti-btn ti-btn--ghost" id="tiRejectBack">Change my answer <span lang="ar">تعديل الإجابة</span></button>
