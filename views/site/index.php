@@ -49,7 +49,10 @@ $this->registerJs('window.TRADE_IN = ' . Json::htmlEncode([
         <aside class="ti-side" id="tiSide" aria-label="Your answers">
             <div class="ti-panel">
                 <h2 class="ti-panel-title">Your device <span class="ti-ar" lang="ar">جهازك</span></h2>
-                <p class="ti-panel-phone" id="tiSidePhone">No phone chosen yet</p>
+                <div class="ti-panel-device">
+                    <div id="tiSidePhoto" hidden></div>
+                    <p class="ti-panel-phone" id="tiSidePhone">No phone chosen yet</p>
+                </div>
                 <div class="ti-mini" id="tiSideOffer" hidden>
                     <span class="ti-mini-label">Up to</span>
                     <span class="ti-mini-amount"><span id="tiSideAmount"></span> JOD</span>

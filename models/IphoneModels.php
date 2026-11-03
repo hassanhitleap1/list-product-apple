@@ -16,6 +16,7 @@ use Yii;
  * @property float|null $price_max Highest Grade A price when the price is a range
  * @property int $is_active
  * @property int $sort_order
+ * @property string|null $image Photo path under web/, shared by all storage sizes of a model
  */
 class IphoneModels extends \yii\db\ActiveRecord
 {
@@ -40,6 +41,7 @@ class IphoneModels extends \yii\db\ActiveRecord
             [['brand'], 'string', 'max' => 50],
             [['name'], 'string', 'max' => 100],
             [['storage'], 'string', 'max' => 20],
+            [['image'], 'string', 'max' => 255],
             [['model'], 'string', 'max' => 255],
             [['brand', 'name', 'storage'], 'trim'],
             [['price_max', 'storage'], 'default', 'value' => null],
@@ -68,6 +70,7 @@ class IphoneModels extends \yii\db\ActiveRecord
             'price_max' => Yii::t('app', 'Max price (JOD)'),
             'is_active' => Yii::t('app', 'Shown on site'),
             'sort_order' => Yii::t('app', 'Sort order'),
+            'image' => Yii::t('app', 'Photo'),
         ];
     }
 
@@ -110,9 +113,46 @@ class IphoneModels extends \yii\db\ActiveRecord
                 'storage' => $r->storage,
                 'min' => (float)$r->price,
                 'max' => (float)($r->price_max && $r->price_max > $r->price ? $r->price_max : $r->price),
+                'image' => $r->getImageUrl(),
             ];
         }
         return $out;
+    }
+
+    /** Public URL of the photo, or null. */
+    public function getImageUrl()
+    {
+        return $this->image ? Yii::getAlias('@web/' . ltrim($this->image, '/')) : null;
+    }
+
+    /** Short stable key for a brand + model name (used in upload field names). */
+    public static function groupKey($brand, $name)
+    {
+        return substr(md5($brand . '|' . $name), 0, 12);
+    }
+
+    /**
+     * One entry per model (all storage sizes together), in display order.
+     * @return array key => ['brand', 'name', 'image', 'sizes', 'active']
+     */
+    public static function modelGroups()
+    {
+        $rows = static::find()->orderBy(['brand' => SORT_ASC, 'sort_order' => SORT_ASC, 'id' => SORT_ASC])->all();
+        $groups = [];
+        foreach ($rows as $r) {
+            $name = $r->name ?: $r->model;
+            $key = static::groupKey($r->brand, $name);
+            if (!isset($groups[$key])) {
+                $groups[$key] = ['brand' => $r->brand, 'name' => $name, 'image' => null, 'imageUrl' => null, 'sizes' => [], 'active' => false];
+            }
+            if ($r->image && !$groups[$key]['image']) {
+                $groups[$key]['image'] = $r->image;
+                $groups[$key]['imageUrl'] = $r->getImageUrl();
+            }
+            if ($r->storage) $groups[$key]['sizes'][] = $r->storage;
+            $groups[$key]['active'] = $groups[$key]['active'] || (bool)$r->is_active;
+        }
+        return $groups;
     }
 
     public static function find()
