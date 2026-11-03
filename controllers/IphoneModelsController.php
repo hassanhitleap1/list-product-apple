@@ -75,6 +75,21 @@ class IphoneModelsController extends Controller
             foreach ($groups as $key => $g) {
                 $file = UploadedFile::getInstanceByName('photo[' . $key . ']');
                 $where = ['brand' => $g['brand'], 'name' => $g['name']];
+                $link = trim((string)$this->request->post('link', [])[$key] ?? '');
+
+                if ($link !== '' && !($file && !$file->hasError)) {
+                    if ($link === $g['image']) {
+                        continue;
+                    }
+                    if (strlen($link) > 1000 || !filter_var($link, FILTER_VALIDATE_URL) || !preg_match('#^https?://#i', $link)) {
+                        $errors[] = $g['name'] . ': the link must be a full web address starting with https://';
+                        continue;
+                    }
+                    IphoneModels::updateAll(['image' => $link], $where);
+                    $this->deletePhoto($g['image']);
+                    $saved++;
+                    continue;
+                }
 
                 if ($file && !$file->hasError) {
                     $ext = strtolower($file->extension);
