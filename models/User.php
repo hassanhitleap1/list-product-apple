@@ -2,103 +2,92 @@
 
 namespace app\models;
 
-class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
+use Yii;
+use yii\db\ActiveRecord;
+use yii\web\IdentityInterface;
+
+/**
+ * Back-office user (table "user"). Passwords are stored as bcrypt hashes.
+ * Create or change accounts from the console: php yii user/create <username>
+ *
+ * @property int $id
+ * @property string $username
+ * @property string $password_hash
+ * @property string $auth_key
+ * @property int $created_at
+ * @property int $updated_at
+ */
+class User extends ActiveRecord implements IdentityInterface
 {
-    public $id;
-    public $username;
-    public $password;
-    public $authKey;
-    public $accessToken;
+    const MIN_PASSWORD = 8;
 
-    private static $users = [
-        '100' => [
-            'id' => '100',
-            'username' => 'admin',
-            'password' => 'admin',
-            'authKey' => 'test100key',
-            'accessToken' => '100-token',
-        ],
-        '101' => [
-            'id' => '101',
-            'username' => 'demo',
-            'password' => 'demo',
-            'authKey' => 'test101key',
-            'accessToken' => '101-token',
-        ],
-    ];
-
-
-    /**
-     * {@inheritdoc}
-     */
-    public static function findIdentity($id)
+    public static function tableName()
     {
-        return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
+        return '{{%user}}';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function findIdentityByAccessToken($token, $type = null)
+    public function rules()
     {
-        foreach (self::$users as $user) {
-            if ($user['accessToken'] === $token) {
-                return new static($user);
-            }
+        return [
+            [['username'], 'trim'],
+            [['username', 'password_hash', 'auth_key'], 'required'],
+            [['username'], 'string', 'min' => 3, 'max' => 64],
+            [['username'], 'match', 'pattern' => '/^[A-Za-z0-9_.\-@]+$/', 'message' => 'Use letters, numbers, dot, dash, underscore or @ only.'],
+            [['username'], 'unique'],
+        ];
+    }
+
+    public function beforeSave($insert)
+    {
+        $now = time();
+        if ($insert) {
+            $this->created_at = $now;
         }
-
-        return null;
+        $this->updated_at = $now;
+        return parent::beforeSave($insert);
     }
 
-    /**
-     * Finds user by username
-     *
-     * @param string $username
-     * @return static|null
-     */
+    /** Sets a new password (stored hashed) and signs out other sessions. */
+    public function setPassword($password)
+    {
+        $this->password_hash = Yii::$app->security->generatePasswordHash($password);
+        $this->auth_key = Yii::$app->security->generateRandomString(32);
+    }
+
+    public function validatePassword($password)
+    {
+        return Yii::$app->security->validatePassword((string)$password, $this->password_hash);
+    }
+
     public static function findByUsername($username)
     {
-        foreach (self::$users as $user) {
-            if (strcasecmp($user['username'], $username) === 0) {
-                return new static($user);
-            }
-        }
-
-        return null;
+        return static::findOne(['username' => (string)$username]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    /* ---------- IdentityInterface ---------- */
+
+    public static function findIdentity($id)
+    {
+        return static::findOne(['id' => $id]);
+    }
+
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
+        return null; // No API tokens.
+    }
+
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getAuthKey()
     {
-        return $this->authKey;
+        return $this->auth_key;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function validateAuthKey($authKey)
     {
-        return $this->authKey === $authKey;
-    }
-
-    /**
-     * Validates password
-     *
-     * @param string $password password to validate
-     * @return bool if password provided is valid for current user
-     */
-    public function validatePassword($password)
-    {
-        return $this->password === $password;
+        return is_string($authKey) && $this->auth_key !== null && hash_equals($this->auth_key, $authKey);
     }
 }

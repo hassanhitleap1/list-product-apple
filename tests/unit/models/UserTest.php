@@ -6,39 +6,44 @@ use app\models\User;
 
 class UserTest extends \Codeception\Test\Unit
 {
-    public function testFindUserById()
-    {
-        verify($user = User::findIdentity(100))->notEmpty();
-        verify($user->username)->equals('admin');
+    private $user;
 
-        verify(User::findIdentity(999))->empty();
+    protected function _before()
+    {
+        User::deleteAll(['username' => 'unit-tester']);
+        $this->user = new User(['username' => 'unit-tester']);
+        $this->user->setPassword('secret-pass-1');
+        verify($this->user->save())->true();
     }
 
-    public function testFindUserByAccessToken()
+    protected function _after()
     {
-        verify($user = User::findIdentityByAccessToken('100-token'))->notEmpty();
-        verify($user->username)->equals('admin');
-
-        verify(User::findIdentityByAccessToken('non-existing'))->empty();        
+        User::deleteAll(['username' => 'unit-tester']);
     }
 
-    public function testFindUserByUsername()
+    public function testFindUser()
     {
-        verify($user = User::findByUsername('admin'))->notEmpty();
-        verify(User::findByUsername('not-admin'))->empty();
+        verify(User::findIdentity($this->user->id)->username)->equals('unit-tester');
+        verify(User::findByUsername('unit-tester'))->notEmpty();
+        verify(User::findByUsername('not-a-user'))->empty();
+        verify(User::findIdentityByAccessToken('anything'))->empty();
     }
 
-    /**
-     * @depends testFindUserByUsername
-     */
-    public function testValidateUser()
+    public function testPasswordIsHashed()
     {
-        $user = User::findByUsername('admin');
-        verify($user->validateAuthKey('test100key'))->notEmpty();
-        verify($user->validateAuthKey('test102key'))->empty();
-
-        verify($user->validatePassword('admin'))->notEmpty();
-        verify($user->validatePassword('123456'))->empty();        
+        verify($this->user->password_hash)->notEquals('secret-pass-1');
+        verify($this->user->validatePassword('secret-pass-1'))->true();
+        verify($this->user->validatePassword('wrong'))->false();
     }
 
+    public function testAuthKey()
+    {
+        verify($this->user->validateAuthKey($this->user->auth_key))->true();
+        verify($this->user->validateAuthKey('wrong-key'))->false();
+    }
+
+    public function testNoDemoAccounts()
+    {
+        verify(User::findByUsername('demo'))->empty();
+    }
 }
