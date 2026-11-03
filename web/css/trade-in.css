@@ -172,6 +172,44 @@
 .ti-scratch-cell svg { width: 104px; height: auto; }
 .ti-scratch figcaption { margin-top: .75rem; color: var(--muted); font-size: .9375rem; }
 
+/* ---------- Device photo ---------- */
+
+.ti-device {
+    display: flex;
+    gap: 1.25rem;
+    align-items: center;
+    margin-top: 1.25rem;
+    padding: 1rem;
+    border-radius: 1.5rem;
+    background: var(--mist);
+    max-width: 40rem;
+}
+.ti-device-body { min-width: 0; }
+.ti-device-body .ti-label { margin-top: .75rem; }
+.ti-device-name { font-size: 1.1875rem; font-weight: 600; margin: 0; }
+.ti-device-meta { color: var(--muted); font-size: .9375rem; margin: .125rem 0 0; }
+
+.ti-device-visual {
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 8rem;
+    height: 8rem;
+    border-radius: 1.25rem;
+    background: var(--paper);
+    overflow: hidden;
+}
+.ti-device-visual img { width: 100%; height: 100%; object-fit: contain; padding: .5rem; }
+.ti-device-visual svg { width: auto; height: 82%; }
+.ti-device-visual--lg { width: 10rem; height: 10rem; background: var(--mist); }
+.ti-device-visual--sm { width: 4rem; height: 4rem; border-radius: .875rem; background: var(--mist); }
+.ti-device-visual--sm img { padding: .25rem; }
+
+@media (max-width: 575.98px) {
+    .ti-device { flex-direction: column; align-items: flex-start; }
+    .ti-device-visual { width: 100%; height: 11rem; }
+}
+
 /* ---------- Buttons ---------- */
 
 .ti-nav { display: flex; justify-content: space-between; gap: .75rem; margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid var(--line); }
@@ -201,7 +239,9 @@
 
 /* ---------- Result ---------- */
 
-.ti-result-phone { color: var(--muted); margin: -.75rem 0 1rem; }
+.ti-result-device { display: flex; align-items: center; gap: 1.25rem; margin: -.25rem 0 1.25rem; }
+.ti-result-name { font-size: 1.25rem; font-weight: 600; margin: 0; }
+.ti-result-phone { color: var(--muted); margin: .125rem 0 0; }
 
 .ti-capsule {
     display: flex;
@@ -235,7 +275,8 @@
 
 .ti-panel { background: var(--paper); border: 1px solid var(--line); border-radius: 1.5rem; padding: 1.25rem 1.25rem .75rem; }
 .ti-panel-title { display: flex; justify-content: space-between; gap: .5rem; font-size: 1rem; font-weight: 500; margin: 0; }
-.ti-panel-phone { color: var(--muted); margin: .25rem 0 .75rem; }
+.ti-panel-device { display: flex; align-items: center; gap: .875rem; margin: .5rem 0 .75rem; }
+.ti-panel-phone { color: var(--muted); margin: 0; }
 
 .ti-mini { display: flex; align-items: baseline; justify-content: space-between; padding: .625rem 1rem; border-radius: 999px; background: var(--blue-soft); margin-bottom: .75rem; }
 .ti-mini[hidden] { display: none; }

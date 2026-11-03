@@ -26,7 +26,8 @@ $isAdmin = in_array($controllerId, ['iphone-models', 'battary-models'], true);
 // Links shown in the navbar. Admin links only appear on the admin pages.
 $navItems = $isAdmin
     ? [
-        ['label' => 'Phones & prices', 'url' => ['/iphone-models/index'], 'active' => $controllerId === 'iphone-models'],
+        ['label' => 'Phones & prices', 'url' => ['/iphone-models/index'], 'active' => $controllerId === 'iphone-models' && Yii::$app->controller->action->id !== 'photos'],
+        ['label' => 'Model photos', 'url' => ['/iphone-models/photos'], 'active' => $controllerId === 'iphone-models' && Yii::$app->controller->action->id === 'photos'],
         ['label' => 'Calculator', 'url' => ['/site/index'], 'active' => false],
     ]
     : [

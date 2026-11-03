@@ -19,6 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a(Yii::t('app', 'Add phone'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Yii::t('app', 'Model photos'), ['photos'], ['class' => 'btn btn-outline-primary']) ?>
         <?= Html::a(Yii::t('app', 'Open calculator'), ['/site/index'], ['class' => 'btn btn-outline-secondary']) ?>
     </p>
 
@@ -26,6 +27,19 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
+            [
+                'attribute' => 'image',
+                'label' => '',
+                'format' => 'raw',
+                'filter' => false,
+                'enableSorting' => false,
+                'contentOptions' => ['style' => 'width:56px'],
+                'value' => function (IphoneModels $m) {
+                    return $m->getImageUrl()
+                        ? Html::img($m->getImageUrl(), ['alt' => '', 'style' => 'width:44px;height:44px;object-fit:contain', 'loading' => 'lazy'])
+                        : '';
+                },
+            ],
             [
                 'attribute' => 'brand',
                 'filter' => IphoneModels::BRANDS,

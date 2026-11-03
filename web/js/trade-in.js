@@ -12,7 +12,7 @@
 
     var els = {
         bar: $('tiProgressBar'), barText: $('tiProgressText'), back: $('tiBack'), next: $('tiNext'),
-        sidePhone: $('tiSidePhone'), sideOffer: $('tiSideOffer'), sideAmount: $('tiSideAmount'), answers: $('tiAnswers'),
+        sidePhone: $('tiSidePhone'), sidePhoto: $('tiSidePhoto'), sideOffer: $('tiSideOffer'), sideAmount: $('tiSideAmount'), answers: $('tiAnswers'),
         mBar: $('tiBar'), mBarAmount: $('tiBarAmount'), mBarStep: $('tiBarStep'),
         reject: $('tiReject'), rejectReason: $('tiRejectReason'),
         rejectRestart: $('tiRejectRestart'), rejectBack: $('tiRejectBack')
@@ -22,6 +22,12 @@
     data.steps.forEach(function (s) { stepById[s.id] = s; });
     var phoneById = {};
     data.catalog.forEach(function (p) { phoneById[p.id] = p; });
+    // Photo for a model: the first row of that brand + model that has one.
+    var photoByModel = {};
+    data.catalog.forEach(function (p) {
+        var k = p.brand + '|' + p.name;
+        if (p.image && !photoByModel[k]) photoByModel[k] = p.image;
+    });
     var brands = [];
     data.catalog.forEach(function (p) { if (brands.indexOf(p.brand) === -1) brands.push(p.brand); });
 
@@ -255,8 +261,15 @@
 
         if (state.model) {
             var opts = data.catalog.filter(function (p) { return p.brand === state.brand && p.name === state.model; });
+            var maxPrice = Math.max.apply(null, opts.map(function (p) { return p.max; }));
+            var card = el('div', {class: 'ti-device'});
+            card.appendChild(deviceVisual(state.brand, state.model));
+            var body = el('div', {class: 'ti-device-body'}, [
+                el('p', {class: 'ti-device-name', text: state.model}),
+                el('p', {class: 'ti-device-meta', text: 'Grade A up to ' + fmt(maxPrice) + ' JOD'})
+            ]);
             if (!(opts.length === 1 && !opts[0].storage)) {
-                storageWrap.appendChild(el('p', {class: 'ti-label', id: 'tiStorageLabel'}, ['Storage ', ar('السعة')]));
+                body.appendChild(el('p', {class: 'ti-label', id: 'tiStorageLabel'}, ['Storage ', ar('السعة')]));
                 var row = el('div', {class: 'ti-choices ti-choices--row', role: 'radiogroup', 'aria-labelledby': 'tiStorageLabel'});
                 opts.forEach(function (p) {
                     row.appendChild(el('button', {
@@ -264,8 +277,10 @@
                         text: p.storage || 'All sizes', onclick: function () { state.phoneId = p.id; render(); }
                     }));
                 });
-                storageWrap.appendChild(row);
+                body.appendChild(row);
             }
+            card.appendChild(body);
+            storageWrap.appendChild(card);
         }
         return wrap;
     }
@@ -313,7 +328,13 @@
         var r = calc();
         var wrap = el('div', {class: 'ti-q ti-result'});
         wrap.appendChild(el('h2', {class: 'ti-q-title', id: 'tiQTitle'}, ['Your trade-in offer', ar('عرض الاستبدال', 'ti-q-ar')]));
-        wrap.appendChild(el('p', {class: 'ti-result-phone', text: r.phone ? r.phone.name + (r.phone.storage ? ', ' + r.phone.storage : '') : ''}));
+        wrap.appendChild(el('div', {class: 'ti-result-device'}, [
+            deviceVisual(r.phone.brand, r.phone.name, 'ti-device-visual--lg'),
+            el('div', null, [
+                el('p', {class: 'ti-result-name', text: r.phone.name}),
+                el('p', {class: 'ti-result-phone', text: [r.phone.brand, r.phone.storage].filter(Boolean).join(', ')})
+            ])
+        ]));
 
         wrap.appendChild(el('div', {class: 'ti-capsule', 'aria-live': 'polite'}, [
             el('span', {class: 'ti-amount', text: r.low === r.high ? fmt(r.high) : fmt(r.low) + ' – ' + fmt(r.high)}),
@@ -414,6 +435,23 @@
         return fig;
     }
 
+    /* ---------- Device photo (uploaded in admin) or drawing ---------- */
+
+    var svgUid = 100;
+    function deviceVisual(brand, name, cls) {
+        var box = el('div', {class: 'ti-device-visual ' + (cls || '')});
+        var src = photoByModel[brand + '|' + name];
+        if (src) {
+            var img = el('img', {src: src, alt: name, loading: 'lazy', decoding: 'async'});
+            img.addEventListener('error', function () { box.textContent = ''; box.appendChild(phoneSvg(brand, 'front', 0, svgUid++)); });
+            box.appendChild(img);
+        } else {
+            box.classList.add('is-drawing');
+            box.appendChild(phoneSvg(brand, 'front', 0, svgUid++));
+        }
+        return box;
+    }
+
     /* ---------- Render ---------- */
 
     function render() {
@@ -455,6 +493,13 @@
     function renderSide() {
         var r = calc();
         els.sidePhone.textContent = r.phone ? r.phone.name + (r.phone.storage ? ', ' + r.phone.storage : '') : 'No phone chosen yet';
+        var photoKey = r.phone ? r.phone.brand + '|' + r.phone.name : '';
+        if (els.sidePhoto.dataset.key !== photoKey) {
+            els.sidePhoto.dataset.key = photoKey;
+            els.sidePhoto.textContent = '';
+            if (r.phone) els.sidePhoto.appendChild(deviceVisual(r.phone.brand, r.phone.name, 'ti-device-visual--sm'));
+        }
+        els.sidePhoto.hidden = !r.phone;
         els.sideOffer.hidden = !r.phone;
         els.mBar.hidden = !r.phone || state.current === 'result';
         if (r.phone) {
