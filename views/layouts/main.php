@@ -27,7 +27,6 @@ $isAdmin = in_array($controllerId, ['iphone-models', 'battary-models'], true);
 $navItems = $isAdmin
     ? [
         ['label' => 'Phones & prices', 'url' => ['/iphone-models/index'], 'active' => $controllerId === 'iphone-models'],
-        ['label' => 'Battery health', 'url' => ['/battary-models/index'], 'active' => $controllerId === 'battary-models'],
         ['label' => 'Calculator', 'url' => ['/site/index'], 'active' => false],
     ]
     : [
