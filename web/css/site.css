@@ -194,3 +194,30 @@ a.desc:after {
 .hidden {
     display: none !important;
 }
+
+/* ---------- Customer requests (back office) ---------- */
+
+.rq-lede { color: var(--am-muted); max-width: 44rem; }
+.rq-bar { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: space-between; align-items: center; margin: 1rem 0; }
+.rq-search { display: flex; gap: .5rem; flex: 1 1 18rem; max-width: 26rem; }
+.rq-table tr.is-new td { font-weight: 500; }
+.rq-head { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem; }
+.rq-head h1 { margin-bottom: .25rem; }
+.rq-meta { color: var(--am-muted); margin: 0; }
+.rq-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+.rq-grid { display: grid; gap: 1.25rem; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 992px) { .rq-grid { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); } }
+.rq-card { background: #fff; border: 1px solid var(--am-line); border-radius: 1rem; padding: 1.25rem; }
+.rq-card h2 { font-size: 1.125rem; margin: 0 0 .75rem; }
+.rq-card h3 { font-size: 1rem; margin: 1.25rem 0 .5rem; color: var(--am-muted); }
+.rq-dl { margin: 0; }
+.rq-dl > div { display: flex; justify-content: space-between; gap: 1rem; padding: .375rem 0; border-bottom: 1px solid #eef3f8; }
+.rq-dl dt { font-weight: 400; color: var(--am-muted); }
+.rq-dl dd { margin: 0; text-align: right; }
+.rq-photos { list-style: none; margin: 0; padding: 0; display: grid; gap: .75rem; grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr)); }
+.rq-photos a { display: block; border-radius: .75rem; overflow: hidden; background: #eef3f8; aspect-ratio: 3 / 4; }
+.rq-photos img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.rq-photos a:focus-visible { outline: 3px solid var(--am-blue); outline-offset: 2px; }
+.rq-hint { color: var(--am-muted); font-size: .875rem; margin: .75rem 0 0; }
+.rq-delete { margin-top: 1.5rem; }
+.am-count { display: inline-block; min-width: 1.375rem; padding: 0 .375rem; margin-left: .25rem; border-radius: 999px; background: var(--am-blue); color: #fff; font-size: .75rem; line-height: 1.375rem; text-align: center; }

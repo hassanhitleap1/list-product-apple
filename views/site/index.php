@@ -5,8 +5,10 @@
 /** @var array $checklist steps, reject message, lowFactor (config/checklist.php) */
 
 use app\assets\TradeInAsset;
+use app\models\TradeInRequest;
 use yii\helpers\Html;
 use yii\helpers\Json;
+use yii\helpers\Url;
 
 TradeInAsset::register($this);
 
@@ -16,6 +18,8 @@ $this->registerJs('window.TRADE_IN = ' . Json::htmlEncode([
     'catalog' => $catalog,
     'steps' => $checklist['steps'],
     'lowFactor' => (float)($checklist['lowFactor'] ?? 0.75),
+    'submitUrl' => Url::to(['/site/submit-request']),
+    'maxPhotos' => TradeInRequest::MAX_PHOTOS,
 ]) . ';', \yii\web\View::POS_HEAD);
 ?>
 
@@ -93,7 +97,7 @@ $this->registerJs('window.TRADE_IN = ' . Json::htmlEncode([
         </div>
     </dialog>
 
-    <!-- Disclaimer (once per browser) -->
+    <!-- Disclaimer + customer name and phone (until they are given in this browser) -->
     <dialog class="ti-dialog" id="tiDisclaimer" aria-labelledby="ti-h-disc">
         <h2 id="ti-h-disc">Before you start</h2>
         <p>Prices on this page are estimates. Please confirm the details with our team by phone or in store before you rely on them. Action Mobile is not responsible for any inaccurate information on this platform, and any use of it is at your own risk.</p>
@@ -101,8 +105,20 @@ $this->registerJs('window.TRADE_IN = ' . Json::htmlEncode([
             <h2>قبل أن تبدأ</h2>
             <p>الأسعار في هذه الصفحة تقديرية. يرجى التحقق من التفاصيل مع فريقنا عبر الهاتف أو في المحل قبل الاعتماد عليها. لا تتحمل شركة Action Mobile مسؤولية أي معلومات غير دقيقة على هذه المنصة، وأي استخدام لها يكون على مسؤولية المستخدم.</p>
         </div>
-        <form method="dialog">
-            <button type="submit" class="ti-btn ti-btn--primary ti-btn--block">I understand <span lang="ar">موافق</span></button>
+        <form id="tiContactForm" class="ti-contact" novalidate>
+            <p class="ti-contact-intro">Your name and phone number, so our team can contact you about your offer.
+                <span lang="ar" dir="rtl">اسمك ورقم هاتفك ليتواصل معك فريقنا بخصوص العرض.</span></p>
+            <div class="ti-field">
+                <label for="tiName">Full name <span lang="ar">الاسم الكامل</span></label>
+                <input type="text" id="tiName" name="name" autocomplete="name" maxlength="100" required aria-describedby="tiNameErr">
+                <p class="ti-field-error" id="tiNameErr" hidden>Enter your name. <span lang="ar">أدخل اسمك.</span></p>
+            </div>
+            <div class="ti-field">
+                <label for="tiPhone">Phone number <span lang="ar">رقم الهاتف</span></label>
+                <input type="tel" id="tiPhone" name="phone" autocomplete="tel" inputmode="tel" dir="ltr" maxlength="20" placeholder="07XXXXXXXX" required aria-describedby="tiPhoneErr">
+                <p class="ti-field-error" id="tiPhoneErr" hidden>Enter a valid phone number, e.g. 0791234567. <span lang="ar">أدخل رقم هاتف صحيح، مثل 0791234567.</span></p>
+            </div>
+            <button type="submit" class="ti-btn ti-btn--primary ti-btn--block">I understand, continue <span lang="ar">موافق، متابعة</span></button>
         </form>
     </dialog>
 </div>

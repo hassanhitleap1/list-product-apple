@@ -4,6 +4,7 @@
 /** @var string $content */
 
 use app\assets\AppAsset;
+use app\models\TradeInRequest;
 use app\widgets\Alert;
 use yii\bootstrap5\Breadcrumbs;
 use yii\bootstrap5\Html;
@@ -25,7 +26,9 @@ $actionId = Yii::$app->controller->action->id ?? '';
 $isGuest = Yii::$app->user->isGuest;
 
 // The menu is only for signed-in staff. Guests see the logo and nothing else.
+$newRequests = $isGuest ? 0 : TradeInRequest::countNew();
 $navItems = $isGuest ? [] : [
+    ['label' => 'Requests', 'count' => $newRequests, 'url' => ['/trade-in-requests/index'], 'active' => $controllerId === 'trade-in-requests'],
     ['label' => 'Phones & prices', 'url' => ['/iphone-models/index'], 'active' => $controllerId === 'iphone-models' && $actionId !== 'photos'],
     ['label' => 'Model photos', 'url' => ['/iphone-models/photos'], 'active' => $controllerId === 'iphone-models' && $actionId === 'photos'],
     ['label' => 'Calculator', 'url' => ['/site/index'], 'active' => $controllerId === 'site' && $actionId === 'index'],
@@ -55,7 +58,7 @@ $navItems = $isGuest ? [] : [
             <ul class="am-links">
                 <?php foreach ($navItems as $item): ?>
                     <li>
-                        <a href="<?= Url::to($item['url']) ?>" class="am-link<?= $item['active'] ? ' is-active' : '' ?>"<?= $item['active'] ? ' aria-current="page"' : '' ?>><?= Html::encode($item['label']) ?></a>
+                        <a href="<?= Url::to($item['url']) ?>" class="am-link<?= $item['active'] ? ' is-active' : '' ?>"<?= $item['active'] ? ' aria-current="page"' : '' ?>><?= Html::encode($item['label']) ?><?php if (!empty($item['count'])): ?> <span class="am-count" aria-label="<?= (int)$item['count'] ?> new"><?= (int)$item['count'] ?></span><?php endif; ?></a>
                     </li>
                 <?php endforeach; ?>
             </ul>
