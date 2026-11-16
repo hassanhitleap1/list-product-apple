@@ -52,7 +52,6 @@
     }
     function ar(text, cls) { return text ? el('span', {lang: 'ar', dir: 'rtl', class: cls || 'ti-ar', text: text}) : null; }
     function fmt(n) { return Math.round(n).toLocaleString('en-US'); }
-    function pct(share) { return '−' + (Math.round(share * 1000) / 10) + '%'; }
     function norm(s) { return String(s || '').toLowerCase().replace(/[^a-z0-9+]/g, ''); }
     function name(step) { return step.short || step.title; }
     function optionOf(step, value) {
@@ -296,7 +295,7 @@
         var list = el('div', {class: 'ti-choices', role: 'radiogroup', 'aria-labelledby': 'tiQTitle'});
         step.options.forEach(function (o) {
             var badge = o.reject ? el('span', {class: 'ti-badge ti-badge--stop', text: 'Branch check'})
-                : o.deduct ? el('span', {class: 'ti-badge', text: pct(o.deduct)}) : null;
+                : null; // Deduction percentages are not shown to anyone, only the final price.
             list.appendChild(el('button', {
                 type: 'button', class: 'ti-choice', role: 'radio', 'aria-checked': String(chosen === o.value),
                 onclick: function () { answer(step, o); }
@@ -341,15 +340,6 @@
             el('span', {class: 'ti-currency', text: 'JOD'})
         ]));
         wrap.appendChild(el('p', {class: 'ti-average'}, ['Average price ', el('strong', {text: fmt(r.avg) + ' JOD'}), ' ', ar('متوسط السعر')]));
-
-        var dl = el('dl', {class: 'ti-breakdown'});
-        function row(label, value, cls) {
-            dl.appendChild(el('div', {class: cls || ''}, [el('dt', {text: label}), el('dd', {text: value})]));
-        }
-        row('Grade A price', r.phone.max > r.phone.min ? fmt(r.phone.min) + ' – ' + fmt(r.phone.max) + ' JOD' : fmt(r.phone.min) + ' JOD');
-        r.items.forEach(function (it) { row(name(it.step) + ': ' + it.option.label, pct(it.option.deduct), 'is-minus'); });
-        row('Total deduction', r.share > 0 ? pct(r.share) : 'None', 'is-total');
-        wrap.appendChild(dl);
 
         wrap.appendChild(el('p', {class: 'ti-result-note'}, [
             'Bring your phone to any Action Mobile branch to confirm the final price.',
@@ -514,10 +504,10 @@
             if (!isAsked(s) || state.answers[s.id] === undefined) return;
             var o = optionOf(s, state.answers[s.id]);
             if (!o) return;
-            var li = el('li', {class: o.reject ? 'is-stop' : (o.deduct ? 'is-minus' : '')}, [
+            var li = el('li', {class: o.reject ? 'is-stop' : ''}, [
                 el('button', {type: 'button', class: 'ti-answer', title: 'Change this answer', onclick: function () { go(s.id); }}, [
                     el('span', {class: 'ti-answer-q', text: name(s)}),
-                    el('span', {class: 'ti-answer-a', text: o.label + (o.deduct ? '  ' + pct(o.deduct) : '')})
+                    el('span', {class: 'ti-answer-a', text: o.label})
                 ])
             ]);
             els.answers.appendChild(li);

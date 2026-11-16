@@ -30,6 +30,9 @@ $faulty = function ($deduct) {
 return [
     'rejectMessage' => 'Please visit one of our branches so we can help you evaluate your device.',
     'rejectMessage_ar' => 'الرجاء مراجعة أحد فروعنا لمساعدتكم في تقييم الجهاز.',
+    // Phone number shown with the reject message (tap to call on mobile).
+    'branchPhone' => '0791009595',
+    'branchPhoneIntl' => '+962791009595',
 
     // The low end of the offer is the high end multiplied by this (0.75 = 25% lower).
     'lowFactor' => 0.75,
