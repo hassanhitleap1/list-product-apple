@@ -150,6 +150,7 @@
 
     function restart() {
         state = freshState();
+        clearShots();
         if (els.reject.open) els.reject.close();
         go('phone');
     }
@@ -180,6 +181,7 @@
     function answer(step, option) {
         state.answers[step.id] = option.value;
         delete state.confirmed[step.id];
+        delete state.sentId; // a changed answer is a new request
         pruneAnswers();
 
         if (option.reject) {
@@ -345,8 +347,194 @@
             'Bring your phone to any Action Mobile branch to confirm the final price.',
             el('span', {lang: 'ar', dir: 'rtl', text: 'أحضر جهازك إلى أي فرع من فروع Action Mobile لتأكيد السعر النهائي.'})
         ]));
+        wrap.appendChild(state.sentId ? renderSent() : renderSend());
         wrap.appendChild(el('button', {type: 'button', class: 'ti-btn ti-btn--ghost', onclick: restart}, ['Start over ', ar('ابدأ من جديد', '')]));
         return wrap;
+    }
+
+    /* ---------- Last step: photos of the phone, then send to the team ---------- */
+
+    var MAX_PHOTOS = data.maxPhotos || 10;
+    var MAX_SIDE = 1600; // px; keeps each photo around 300-600 KB
+    var shots = [];      // [{blob, url}]
+    var sending = false;
+
+    function clearShots() {
+        shots.forEach(function (s) { URL.revokeObjectURL(s.url); });
+        shots = [];
+    }
+
+    // Resize a camera photo to a JPEG no wider/taller than MAX_SIDE.
+    function shrink(file) {
+        return new Promise(function (resolve) {
+            var url = URL.createObjectURL(file);
+            var img = new Image();
+            img.onload = function () {
+                var scale = Math.min(1, MAX_SIDE / Math.max(img.naturalWidth, img.naturalHeight));
+                var c = document.createElement('canvas');
+                c.width = Math.round(img.naturalWidth * scale);
+                c.height = Math.round(img.naturalHeight * scale);
+                c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+                URL.revokeObjectURL(url);
+                c.toBlob(function (blob) {
+                    resolve(blob && blob.size < file.size ? blob : (/^image\/(jpeg|png|webp)$/.test(file.type) ? file : blob));
+                }, 'image/jpeg', 0.85);
+            };
+            img.onerror = function () {
+                URL.revokeObjectURL(url);
+                // The browser can't read it (e.g. HEIC on a computer): send it as is only if the server accepts the type.
+                resolve(/^image\/(jpeg|png|webp)$/.test(file.type) ? file : null);
+            };
+            img.src = url;
+        });
+    }
+
+    function renderSend() {
+        var box = el('section', {class: 'ti-send', 'aria-labelledby': 'tiSendTitle'});
+        box.appendChild(el('h3', {class: 'ti-send-title', id: 'tiSendTitle'}, ['Send photos of your phone', ar('أرسل صور جهازك', 'ti-q-ar')]));
+        box.appendChild(el('p', {class: 'ti-send-help'}, [
+            'Take clear photos of the front, the back and the sides, with the screen on. You can add up to ' + MAX_PHOTOS + ' photos.',
+            el('span', {lang: 'ar', dir: 'rtl', text: 'صوّر الواجهة والظهر والجوانب بوضوح والشاشة مضاءة. يمكنك إضافة حتى ' + MAX_PHOTOS + ' صور.'})
+        ]));
+
+        var grid = el('ul', {class: 'ti-shots', 'aria-label': 'Your photos'});
+        var count = el('p', {class: 'ti-shots-count', 'aria-live': 'polite'});
+        var error = el('p', {class: 'ti-send-error', role: 'alert', hidden: true});
+
+        var camera = el('input', {type: 'file', accept: 'image/*', capture: 'environment', hidden: true, 'aria-hidden': 'true', tabindex: '-1'});
+        var gallery = el('input', {type: 'file', accept: 'image/*', multiple: true, hidden: true, 'aria-hidden': 'true', tabindex: '-1'});
+        var takeBtn = el('button', {type: 'button', class: 'ti-btn ti-btn--primary ti-btn--shot', onclick: function () { camera.click(); }}, [
+            cameraIcon(), 'Take a photo ', el('span', {lang: 'ar', text: 'التقط صورة'})
+        ]);
+        var pickBtn = el('button', {type: 'button', class: 'ti-btn ti-btn--ghost', onclick: function () { gallery.click(); }}, [
+            'Choose from gallery ', el('span', {lang: 'ar', text: 'من المعرض'})
+        ]);
+
+        var contact = getContact();
+        var sender = el('p', {class: 'ti-sender'}, [
+            'Sending as ', el('strong', {text: contact ? contact.name : ''}), ' · ', el('span', {dir: 'ltr', text: contact ? contact.phone : ''}), ' ',
+            el('button', {type: 'button', class: 'ti-link', onclick: openContact}, ['Change ', el('span', {lang: 'ar', text: 'تعديل'})])
+        ]);
+        var sendBtn = el('button', {type: 'button', class: 'ti-btn ti-btn--primary ti-btn--block ti-btn--send', onclick: send});
+
+        function setError(msg) { error.textContent = msg || ''; error.hidden = !msg; }
+
+        function draw() {
+            grid.textContent = '';
+            shots.forEach(function (s, i) {
+                grid.appendChild(el('li', {class: 'ti-shot'}, [
+                    el('img', {src: s.url, alt: 'Photo ' + (i + 1)}),
+                    el('button', {type: 'button', class: 'ti-shot-remove', 'aria-label': 'Remove photo ' + (i + 1), disabled: sending, onclick: function () {
+                        URL.revokeObjectURL(s.url);
+                        shots.splice(i, 1);
+                        setError('');
+                        draw();
+                        (grid.querySelector('.ti-shot-remove') || takeBtn).focus();
+                    }}, ['×'])
+                ]));
+            });
+            grid.hidden = !shots.length;
+            count.textContent = shots.length ? shots.length + ' of ' + MAX_PHOTOS + ' photos' : 'No photos yet';
+            var full = shots.length >= MAX_PHOTOS;
+            takeBtn.disabled = pickBtn.disabled = full || sending;
+            sendBtn.disabled = !shots.length || sending;
+            sendBtn.textContent = sending ? 'Sending… ' : 'Send to Action Mobile ';
+            sendBtn.appendChild(el('span', {lang: 'ar', text: sending ? 'جارٍ الإرسال…' : 'إرسال إلى أكشن موبايل'}));
+        }
+
+        function add(input) {
+            var files = Array.prototype.slice.call(input.files || []);
+            input.value = '';
+            if (!files.length) return;
+            setError('');
+            var room = MAX_PHOTOS - shots.length;
+            if (files.length > room) setError('You can add up to ' + MAX_PHOTOS + ' photos. Only the first ' + room + ' were added.');
+            files = files.slice(0, Math.max(0, room));
+            Promise.all(files.map(shrink)).then(function (blobs) {
+                var bad = 0;
+                blobs.forEach(function (b) {
+                    if (!b || shots.length >= MAX_PHOTOS) { if (!b) bad++; return; }
+                    shots.push({blob: b, url: URL.createObjectURL(b)});
+                });
+                if (bad) setError('Some files could not be read as photos. Please use JPG or PNG photos.');
+                draw();
+            });
+        }
+        camera.addEventListener('change', function () { add(camera); });
+        gallery.addEventListener('change', function () { add(gallery); });
+
+        function send() {
+            var c = getContact();
+            if (!c) { openContact(); return; }
+            if (!shots.length || sending) return;
+            var r = calc();
+            var answers = {};
+            sequence().forEach(function (id) { if (stepById[id] && state.answers[id] !== undefined) answers[id] = state.answers[id]; });
+
+            var fd = new FormData();
+            var csrfParam = document.querySelector('meta[name="csrf-param"]');
+            var csrfToken = document.querySelector('meta[name="csrf-token"]');
+            if (csrfParam && csrfToken) fd.append(csrfParam.content, csrfToken.content);
+            fd.append('name', c.name);
+            fd.append('phone', c.phone);
+            fd.append('model_id', r.phone.id);
+            fd.append('answers', JSON.stringify(answers));
+            shots.forEach(function (s, i) { fd.append('photos[]', s.blob, 'photo-' + (i + 1) + '.jpg'); });
+
+            sending = true; setError(''); draw();
+            fetch(data.submitUrl, {method: 'POST', body: fd, credentials: 'same-origin', headers: {'Accept': 'application/json'}})
+                .then(function (res) {
+                    return res.json().catch(function () {
+                        return {ok: false, error: res.status === 413 ? 'The photos are too large to send. Remove a few and try again.' : 'Sending failed (' + res.status + '). Please try again.'};
+                    });
+                })
+                .then(function (json) {
+                    sending = false;
+                    if (json && json.ok) {
+                        state.sentId = json.id;
+                        clearShots();
+                        render();
+                        var done = document.getElementById('tiSentTitle');
+                        if (done) done.focus();
+                        return;
+                    }
+                    setError((json && json.error) || 'Sending failed. Please try again.');
+                    draw();
+                })
+                .catch(function () {
+                    sending = false;
+                    setError('No connection. Check your internet and try again.');
+                    draw();
+                });
+        }
+
+        box.appendChild(grid);
+        box.appendChild(count);
+        box.appendChild(el('div', {class: 'ti-shot-actions'}, [takeBtn, pickBtn, camera, gallery]));
+        box.appendChild(error);
+        box.appendChild(sender);
+        box.appendChild(sendBtn);
+        draw();
+        return box;
+    }
+
+    function renderSent() {
+        var c = getContact() || {};
+        return el('section', {class: 'ti-send ti-send--done'}, [
+            el('h3', {class: 'ti-send-title', id: 'tiSentTitle', tabindex: '-1'}, ['Sent. Thank you!', ar('تم الإرسال، شكراً لك!', 'ti-q-ar')]),
+            el('p', {class: 'ti-send-help'}, [
+                'Request no. ' + state.sentId + '. Our team will review your photos and call you on ',
+                el('strong', {dir: 'ltr', text: c.phone || ''}), '.',
+                el('span', {lang: 'ar', dir: 'rtl', text: 'رقم الطلب ' + state.sentId + '. سيراجع فريقنا الصور ويتصل بك قريباً.'})
+            ])
+        ]);
+    }
+
+    function cameraIcon() {
+        var s = svg('svg', {viewBox: '0 0 24 24', width: 20, height: 20, 'aria-hidden': 'true'});
+        s.appendChild(svg('path', {d: 'M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z', fill: 'none', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linejoin': 'round'}));
+        s.appendChild(svg('circle', {cx: 12, cy: 13, r: 3.5, fill: 'none', stroke: 'currentColor', 'stroke-width': 2}));
+        return s;
     }
 
     /* ---------- Scratch drawing (iPhone / Samsung, front and back) ---------- */
@@ -514,21 +702,59 @@
         });
     }
 
+    /* ---------- Disclaimer + name and phone (asked until given in this browser) ---------- */
+
+    var dialog = $('tiDisclaimer');
+    var contactForm = $('tiContactForm');
+    var CONTACT_KEY = 'actionTradeInContact';
+    var contact = null;
+    try { contact = JSON.parse(localStorage.getItem(CONTACT_KEY) || 'null'); } catch (e) { /* storage blocked */ }
+    if (!contact || !contact.name || !contact.phone) contact = null;
+
+    function getContact() { return contact; }
+
+    // Same rules as the server: Arabic digits allowed, spaces/dashes ignored, 7-15 digits.
+    function cleanPhone(v) {
+        return String(v || '').replace(/[٠-٩]/g, function (d) { return String(d.charCodeAt(0) - 0x0660); }).replace(/[\s\-().]/g, '');
+    }
+
+    function openContact() {
+        if (!dialog || typeof dialog.showModal !== 'function') return;
+        $('tiName').value = contact ? contact.name : '';
+        $('tiPhone').value = contact ? contact.phone : '';
+        if (!dialog.open) dialog.showModal();
+    }
+
+    if (dialog) {
+        // The popup can't be dismissed with Esc until the name and phone are in.
+        // Browsers may ignore preventDefault on a repeated Esc, so reopen it if it closed without them.
+        dialog.addEventListener('cancel', function (e) { if (!contact) e.preventDefault(); });
+        dialog.addEventListener('close', function () { if (!contact) openContact(); });
+    }
+    if (contactForm) {
+        contactForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var nameInput = $('tiName'), phoneInput = $('tiPhone');
+            var nm = nameInput.value.trim().replace(/\s+/g, ' ');
+            var ph = cleanPhone(phoneInput.value);
+            var nameOk = nm.length >= 2, phoneOk = /^\+?\d{7,15}$/.test(ph);
+            $('tiNameErr').hidden = nameOk;
+            $('tiPhoneErr').hidden = phoneOk;
+            nameInput.setAttribute('aria-invalid', String(!nameOk));
+            phoneInput.setAttribute('aria-invalid', String(!phoneOk));
+            if (!nameOk) { nameInput.focus(); return; }
+            if (!phoneOk) { phoneInput.focus(); return; }
+            contact = {name: nm, phone: ph};
+            try { localStorage.setItem(CONTACT_KEY, JSON.stringify(contact)); } catch (err) { /* kept for this visit only */ }
+            dialog.close();
+            if (state.current === 'result') render();
+        });
+    }
+
     els.next.addEventListener('click', goNext);
     els.back.addEventListener('click', goBack);
 
     render();
 
-    /* ---------- Disclaimer (shown once per browser) ---------- */
-
-    var dialog = $('tiDisclaimer');
-    var KEY = 'actionTradeInDisclaimer';
-    var accepted = false;
-    try { accepted = localStorage.getItem(KEY) === '1'; } catch (e) { /* storage blocked */ }
-    if (dialog && !accepted && typeof dialog.showModal === 'function') {
-        dialog.showModal();
-        dialog.addEventListener('close', function () {
-            try { localStorage.setItem(KEY, '1'); } catch (e) { /* ignore */ }
-        });
-    }
+    if (!contact) openContact();
 })();
